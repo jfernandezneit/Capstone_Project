@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!-- If theres an issue with this that means that the OR keyword in the sql stmt on line 50 fucked it up -->
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>BarberStop website</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <body>
+        <div id="wrapper">
+            <div id="nav">
+                <a id="btn-home"href="index.php" style="text-decoration:none; width:200px;"><div style="color:white;">Barber<span style="color:#ff442a;">Stop</span></div></a>
+                <?php
+                include_once 'login.php';
+                if (isset($_SESSION['authentication'])) {
+                    if ($_SESSION['authentication'] === true) {
+                        echo "<a href='logout.php' style='position:relative;text-decoration:none; color:lightgrey; left: 877px; top:25px'>Log Out</a>";
+                        echo "<a href='profile.php' style='position:relative; left:887px; top:27px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
+                    } else {
+                        echo "<div style='width:125px; position: relative; left:875px; top:45px;'><a href='login-form.php' style='text-decoration:none; color:lightgrey;'>Log in |</a><a href='signup.php' style='text-decoration:none; color:lightgrey;'> Sign up</a></div>";
+                    }
+                } else {
+                    echo "<div style='width:125px; position: relative; left:875px; top:45px;'><a href='login-form.php' style='text-decoration:none; color:lightgrey;'>Log in |</a><a href='signup.php' style='text-decoration:none; color:lightgrey;'> Sign up</a></div>";
+                }
+                ?>
+            </div><!-- End of nav div -->
+
+            <div id="content" style="background-color: white; min-height: 300px; max-height: 10000px;">
+                <div style="width: 250px; height: 150px; background-color: rgba(0,0,0,.6); position:relative; top:30px; left:25px; border-bottom: 1.5px solid #ff442a;">
+                    <form method="POST" action="#">
+                        <label style="margin-left:5px; margin-top: 10px;" for="zip-result">Zipcode:</label>
+                        <input style="margin-top: 10px;"id="zip-result" type="text" name="zip-result">
+                        <br/>
+                        <br/>
+                        <label style="margin-left:5px;" for="barbname-result">Name:</label>
+                        <input id="barbname-result" type="text" name="barbname-result">
+                        <br/>
+                        <br/>
+                        <input style="margin-left:5px;" type="submit" value="Search" name="Search">
+                    </form>
+                </div>
+                <div>
+                    <?php
+                    include_once 'dbconnect.php';
+
+                    $db = getDatabase();
+                    $zip = filter_input(INPUT_POST, 'zip-result');
+                    $tempname = filter_input(INPUT_POST, 'barbname-result');
+                    $stmt = $db->prepare("SELECT * FROM barbershops WHERE Zip = '$zip'");
+                    if(isset($tempname)){
+                        $stmt = $db->prepare("SELECT * FROM barbershops WHERE Zip = '$zip' OR BarbershopName = '$tempname'");
+                    }
+                    $results = array();
+                    if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
+                        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        foreach ($results as $x):
+                            ?>
+                            <div style="width:650px; height:150px; border-bottom: 1.5px solid #ff442a; position:relative; left: 330px; bottom:120px; margin-bottom: 20px; background-color: rgba(0,0,0,.6);">
+                                <div style="position:relative; left: 150px; top:5px;">Name: <?php echo $x['BarbershopName']; ?></div>
+                                <div style="position:relative; left: 150px; top:5px; margin-top:5px;">Address: <?php echo $x['Address']; ?></div>
+                                <div style="position:relative; left: 150px; top:5px; margin-top:5px;">Zip: <?php echo $x['Zip']; ?></div>
+                                <div style="position:relative; left: 150px; top:5px; margin-top:5px;">Number: <?php echo $x['PhoneNumber']; ?></div>
+                                <div style="position:relative; left: 150px; top:5px; margin-top:5px;">Rating: <?php echo $x['Rating'] . " / 5"; ?></div>
+                                <div style="position:relative; left: 525px;"><a style="text-decoration: none; color:lightgrey" href="results-barbers.php?id=<?php echo $x['BarbershopID'] ?>&barbershopname=<?php echo $x['BarbershopName'] ?>">Set Appointment</a></div>
+                            </div>                    
+                            <?php
+                        endforeach;
+                    } else{
+                        echo "Please re enter the desired zip code.";
+                    }
+                    ?>
+                </div>
+
+            </div><!-- End of content div -->
+
+        </div> <!--End of wrapper div -->
+
+    </body>
+</html>
