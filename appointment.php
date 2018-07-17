@@ -19,7 +19,7 @@ and open the template in the editor.
                 if (isset($_SESSION['authentication'])) {
                     if ($_SESSION['authentication'] === true) {
                         echo "<a href='logout.php' style='position:relative;text-decoration:none; color:lightgrey; left: 877px; top:25px'>Log Out</a>";
-                        echo "<a href='profile.php' style='position:relative; left:887px; top:27px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
+                        echo "<a href='persProfile.php' style='position:relative; left:887px; top:27px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
                     } else {
                         echo "<div style='width:125px; position: relative; left:875px; top:45px;'><a href='login-form.php' style='text-decoration:none; color:lightgrey;'>Log in |</a><a href='signup.php' style='text-decoration:none; color:lightgrey;'> Sign up</a></div>";
                     }
@@ -33,13 +33,13 @@ and open the template in the editor.
                 <?php
                 if (isset($_SESSION['authentication'])) {
                     if ($_SESSION['authentication'] === true) {
-                        if (isset($_SESSION['cust-id'])) {
+                        if (isset($_SESSION['user-id'])) {
                             include_once 'dbconnect.php';
 
                             $db = getDatabase();
                             $barberID = filter_input(INPUT_GET, 'barber-id');
                             $barbershopID = filter_input(INPUT_GET, 'shop-id');
-                            $stmt1 = $db->prepare("SELECT * FROM daystimesavail WHERE BarberID = $barberID AND BarbershopID = $barbershopID");
+                            $stmt1 = $db->prepare("SELECT * FROM daystimesavail WHERE BarberID = '$barberID' AND BarbershopID = '$barbershopID'");
                             $stmt2 = $db->prepare("SELECT * FROM barbers WHERE BarberID = $barberID");
                             if ($stmt1->execute() > 0 && $stmt1->rowCount() > 0) {
                                 $result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
@@ -84,7 +84,7 @@ and open the template in the editor.
                                         <?php
                                         $appDay = filter_input(INPUT_POST, 'daysAvail');
                                         if (isset($appDay)) {
-                                            $stmt3 = $db->prepare("INSERT INTO appointments SET CustomerID = {$_SESSION['cust-id']}, BarberID = $barberID, Day = '$appDay'");
+                                            $stmt3 = $db->prepare("INSERT INTO appointments SET CustomerID = {$_SESSION['user-id']}, BarberID = $barberID, Day = '$appDay'");
                                             if ($stmt3->execute() > 0 && $stmt3->rowCount() > 0) {
                                                 ?>
                                                 <form method="POST" action="#">
@@ -107,13 +107,13 @@ and open the template in the editor.
                                     </div>
                                     <?php
                                     $appTime = filter_input(INPUT_POST, 'timesAvail');
-                                    $stmt4 = $db->prepare("SELECT AppointmentID FROM appointments WHERE CustomerID = {$_SESSION['cust-id']} AND BarberID = $barberID");
+                                    $stmt4 = $db->prepare("SELECT AppointmentID FROM appointments WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID");
                                     if ($stmt4->execute() > 0 && $stmt4->rowCount() > 0) {
                                         $results = $stmt4->fetchAll(PDO::FETCH_ASSOC);
                                         $appID = end($results);
-                                        $stmt5 = $db->prepare("SELECT Day FROM appointments WHERE CustomerID = {$_SESSION['cust-id']} AND BarberID = $barberID AND AppointmentID = {$appID['AppointmentID']}");
+                                        $stmt5 = $db->prepare("SELECT Day FROM appointments WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID AND AppointmentID = {$appID['AppointmentID']}");
                                         if (isset($appTime)) {
-                                            $stmt6 = $db->prepare("UPDATE appointments SET Time = '$appTime' WHERE CustomerID = {$_SESSION['cust-id']} AND BarberID = $barberID AND AppointmentID = {$appID['AppointmentID']}");
+                                            $stmt6 = $db->prepare("UPDATE appointments SET Time = '$appTime' WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID AND AppointmentID = {$appID['AppointmentID']}");
                                             if ($stmt5->execute() > 0 && $stmt5->rowCount() > 0 && $stmt6->execute() > 0 && $stmt6->rowCount() > 0) {
                                                 $result = $stmt5->fetch(PDO::FETCH_ASSOC);
                                                 header("Location: successApp.php?day={$result['Day']}&time=$appTime");
@@ -121,10 +121,10 @@ and open the template in the editor.
                                         }
                                     }
                                 } else {
-                                    echo "Not a valid barber";
+                                    echo "Not a valid barber1";
                                 }
                             } else {
-                                echo "Not a valid barber";
+                                echo "Not a valid barber2";
                             }
                         } else {
                             echo "You can not set appointments with this account.";
