@@ -53,6 +53,7 @@ and open the template in the editor.
                                     echo "<a href='profiles.php?barber-id={$x['BarberID']}'>" . $x['BarberName'] . "</a>";
 
                                 endforeach;
+                                echo 'success1';
                                 echo "<div><img style='width:150px;' src='./uploads/barbershops/barbershopID$barbershopID/profilepic.jpg'/></div>";
                             }
                         }
@@ -63,7 +64,7 @@ and open the template in the editor.
                             $profileName = $result['BarberName'];
                             $profileRating = $result['Rating'];
                             //Then I'm going to pull in the barbershop the barber is affiliated with
-                            echo 'success';
+                            echo 'success2';
                             echo "<div><img style='width:150px;' src='./uploads/barbers/barberID$barberID/profilepic.jpg'/></div>";
                         }
                     }
