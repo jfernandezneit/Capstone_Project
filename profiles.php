@@ -31,7 +31,7 @@ and open the template in the editor.
             </div><!-- End of nav div -->
 
             <div id="content" style="background-color: white; min-height: 300px;">
-                <div style="width:100%; height: 100px; background-color:rgba(0,0,0,.6); position: relative; top: 50px; border-bottom: 1.5px solid #ff442a">
+                <div style="width:100%; background-color:rgba(0,0,0,.6); position: relative; top: 20px; border-bottom: 1.5px solid #ff442a">
                     <?php
                     $db = getDatabase();
                     $barbershopID = filter_input(INPUT_GET, 'barbershop-id');
@@ -39,33 +39,53 @@ and open the template in the editor.
                     if (isset($barbershopID)) {
                         $stmt = $db->prepare("SELECT * FROM barbershops WHERE BarbershopID = '$barbershopID'");
                         if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
+                            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                            $profileName = $result['BarbershopName'];
+                            $profileAddress = $result['Address'];
+                            $profileZip = $result['Zip'];
+                            $profilePhone = $result['PhoneNumber'];
+                            $profileRating = $result['Rating'];
+                            echo "<div><img style='width:150px;' src='./uploads/barbershops/barbershopID$barbershopID/profilepic.jpg'/></div>";
+                            ?>
+                            <div style="width:30%; position:relative; left:5px;">Shop Name: <?php echo $profileName ?></div>
+                                    <div style="width:10%; position:relative; left:5px;">Rating: <?php echo $profileRating ?> / 5</div>
+                                    <br/>
+                                    <div style="width:30%; position:relative; left:5px;">Address: <?php echo $profileAddress . ", " . $profileZip ?></div>
+                                    <div style="width:20%; position:relative; left:5px;">Phone: <?php echo $profilePhone ?></div>
+                                     <div style="width:100px; font-size: 18px; position:relative; left:93.5%; bottom:180px;"><a href="settings.php" style="text-decoration: none; color:white;">Settings</a></div>
+                                    <br/>
+                                    <?php
                             $stmt2 = $db->prepare("SELECT * FROM barbers WHERE BarbershopID = '$barbershopID'");
-                            if ($stmt2->execute() > 0 && $stmt2->rowCount() > 0) {
-                                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                            if ($stmt2->execute() > 0 && $stmt2->rowCount() > 0) {                                
                                 $results = $stmt2->fetchAll(PDO:: FETCH_ASSOC);
-                                $profileName = $result['BarbershopName'];
-                                $profileAddress = $result['Address'];
-                                $profileZip = $result['Zip'];
-                                $profilePhone = $result['PhoneNumber'];
-                                $profileRating = $result['Rating'];
-                                $barbList = array();
                                 foreach ($results as $x):
                                     echo "<a href='profiles.php?barber-id={$x['BarberID']}'>" . $x['BarberName'] . "</a>";
 
                                 endforeach;
                                 echo 'success1';
                                 echo "<div><img style='width:150px;' src='./uploads/barbershops/barbershopID$barbershopID/profilepic.jpg'/></div>";
+                            } else {
+                                echo 'failed1';
                             }
+                        } else {
+                            echo 'failed2';
                         }
                     } elseif (isset($barberID)) {
-                        $stmt = $db->prepare("SELECT * FROM barbers WHERE BarberID = '$barberID'");                        
+                        $stmt = $db->prepare("SELECT * FROM barbers WHERE BarberID = '$barberID'");
                         if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
                             $result = $stmt->fetch(PDO::FETCH_ASSOC);
                             $profileName = $result['BarberName'];
                             $profileRating = $result['Rating'];
-                            //Then I'm going to pull in the barbershop the barber is affiliated with
-                            echo 'success2';
                             echo "<div><img style='width:150px;' src='./uploads/barbers/barberID$barberID/profilepic.jpg'/></div>";
+                                    ?>
+                                        
+                                    <div style="width:30%; position:relative; left:5px;">Barber Name: <?php echo $profileName ?></div>
+                                    <div style="width:10%; position:relative; left:5px;">Rating: <?php echo $profileRating ?> / 5</div>
+                                    <div style="width:100px; font-size: 18px; position:relative; left:93.5%; bottom:180px;"><a href="settings.php" style="text-decoration: none; color:white;">Settings</a></div>
+                                    <br/>
+                                    <?php
+                        } else{
+                            echo 'failed3';
                         }
                     }
                     ?>

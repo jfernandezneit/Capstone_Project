@@ -46,14 +46,7 @@
                                     $barbList = array();
                                     echo "<div><img style='width:150px;' src='./uploads/barbershops/barbershopID{$_SESSION['user-id']}/profilepic.jpg'/></div>";
                                     ?>
-                                    <div><a href="settings.php">Settings</a></div>
-                                    <div style="width:30%; position:relative; left:5px;">Shop Name: <?php echo $profileName ?></div>
-                                    <div style="width:10%; position:relative; left:5px;">Rating: <?php echo $profileRating ?> / 5</div>
-                                    <br/>
-                                    <div style="width:30%; position:relative; left:5px;">Address: <?php echo $profileAddress . ", " . $profileZip ?></div>
-                                    <div style="width:20%; position:relative; left:5px;">Phone: <?php echo $profilePhone ?></div>
-                                     <div style="width:100px; font-size: 18px; position:relative; left:93.5%; bottom:180px;"><a href="settings.php" style="text-decoration: none; color:white;">Settings</a></div>
-                                    <br/>
+                                    
 
                                     <?php
                                     echo "<div style='width:30px; position:relative; left: 5px;'>Barbers</div>";
@@ -127,7 +120,7 @@
                                             <?php
                                         endforeach;
                                     } else {
-                                        echo 'failed';
+                                        echo 'No Reviews for this profile yet.';
                                     }
                                 } elseif ($_SESSION['accType'] === 'customer') {
                                     header("Location: settings.php");
