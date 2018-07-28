@@ -74,7 +74,7 @@
                                     <div style="width:100px; font-size: 18px; position:relative; left:93.5%; bottom:180px;"><a href="settings.php" style="text-decoration: none; color:white;">Settings</a></div>
                                     <br/>
                                     <?php
-                                    //Then I'm going to pull in the barbershop the barber is affiliated with
+                                    //Then I'm going to pull in the barbershop the barber is affilziated with
                                 }
                             } else {
                                 header("Location: settings.php");
