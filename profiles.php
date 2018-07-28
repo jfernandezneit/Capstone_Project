@@ -14,18 +14,25 @@ and open the template in the editor.
         <div id="wrapper">
             <div id="nav">
                 <a id="btn-home" href="index.php" style="text-decoration:none; width:200px;"><div style="color:white;">Barber<span style="color:#ff442a;">Stop</span></div></a>
+                <form method="POST"action="#" style="position:relative; left:42%; top:38px; width:450px;">
+                    <input type="text" name="search">
+                    <input id="action1" type="radio" value="Barbershop" name="action">
+                    <label for="action1">Barbershop</label>
+                    <input type="radio" name="action" value="Barber">
+                    <label for="action2">Barber</label>
+                    <input type="submit" name="submit">
+                </form>
                 <?php
                 include_once 'login.php';
-                include_once 'dbconnect.php';
                 if (isset($_SESSION['authentication'])) {
                     if ($_SESSION['authentication'] === true) {
-                        echo "<a href='logout.php' style='position:relative;text-decoration:none; color:lightgrey; left: 877px; top:25px'>Log Out</a>";
-                        echo "<a href='persProfile.php' style='position:relative; left:887px; top:27px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
+                        echo "<a href='logout.php' style='position:relative;text-decoration:none; color:lightgrey; left: 877px;'>Log Out</a>";
+                        echo "<a href='persProfile.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
                     } else {
-                        echo "<div style='width:125px; position: relative; left:875px; top:45px;'><a href='login-form.php' style='text-decoration:none; color:lightgrey;'>Log in |</a><a href='signup.php' style='text-decoration:none; color:lightgrey;'> Sign up</a></div>";
+                        echo "<div style='width:125px; position: relative; left:875px; top:21px;'><a href='login-form.php' style='text-decoration:none; color:lightgrey;'>Log in |</a><a href='signup.php' style='text-decoration:none; color:lightgrey;'> Sign up</a></div>";
                     }
                 } else {
-                    echo "<div style='width:125px; position: relative; left:875px; top:45px;'><a href='login-form.php' style='text-decoration:none; color:lightgrey;'>Log in |</a><a href='signup.php' style='text-decoration:none; color:lightgrey;'> Sign up</a></div>";
+                    echo "<div style='width:125px; position: relative; left:875px; top:21px;'><a href='login-form.php' style='text-decoration:none; color:lightgrey;'>Log in |</a><a href='signup.php' style='text-decoration:none; color:lightgrey;'> Sign up</a></div>";
                 }
                 ?>
             </div><!-- End of nav div -->
@@ -53,17 +60,18 @@ and open the template in the editor.
                             <div style="width:30%; position:relative; left:5px;">Address: <?php echo $profileAddress . ", " . $profileZip ?></div>
                             <div style="width:20%; position:relative; left:5px;">Phone: <?php echo $profilePhone ?></div>
                             <div style="width:100px; font-size: 18px; position:relative; left:93.5%; bottom:180px;"><a href="settings.php" style="text-decoration: none; color:white;">Settings</a></div>
-                            <br/>
                             <?php
                             $stmt2 = $db->prepare("SELECT * FROM barbers WHERE BarbershopID = '$barbershopID'");
                             if ($stmt2->execute() > 0 && $stmt2->rowCount() > 0) {
                                 $results = $stmt2->fetchAll(PDO:: FETCH_ASSOC);
+                                echo "<h3>Barbers</h3>";
                                 foreach ($results as $x):
-                                    echo "<a href='profiles.php?barber-id={$x['BarberID']}'>" . $x['BarberName'] . "</a>";
+                                    echo "<a href='profiles.php?barber-id={$x['BarberID']}' style='text-decoration:none; color:white;'>" . $x['BarberName'] . "</a>";
+                                    echo "<br/>";
 
                                 endforeach;                               
                             } else {
-                                echo 'failed1';
+                                echo 'This barbershop does not have barbers yet.';
                             }
                         } else {
                             echo 'failed2';
@@ -110,6 +118,8 @@ and open the template in the editor.
                                     </div>
                                     <?php
                                 endforeach;
+                            } else {
+                                echo "There are no reviews for this barbershop yet.";
                             }
                         } elseif (isset($barberID)) {
                             $stmt = $db->prepare("SELECT * FROM barbereviews WHERE BarberID = '$barberID'");
