@@ -54,7 +54,7 @@
                                     $barbList = array();
                                     echo "<div><img style='width:150px;' src='./uploads/barbershops/barbershopID{$_SESSION['user-id']}/profilepic.jpg'/></div>";
                                     ?>
-                                    
+
 
                                     <?php
                                     echo "<div style='width:30px; position:relative; left: 5px;'>Barbers</div>";
@@ -76,7 +76,7 @@
                                     $profileRating = $result['Rating'];
                                     echo "<div><img style='width:150px;' src='./uploads/barbers/barberID{$_SESSION['user-id']}/profilepic.jpg'/></div>";
                                     ?>
-                                        
+
                                     <div style="width:30%; position:relative; left:5px;">Barber Name: <?php echo $profileName ?></div>
                                     <div style="width:10%; position:relative; left:5px;">Rating: <?php echo $profileRating ?> / 5</div>
                                     <div style="width:100px; font-size: 18px; position:relative; left:93.5%; bottom:180px;"><a href="settings.php" style="text-decoration: none; color:white;">Settings</a></div>
@@ -92,48 +92,44 @@
                         </div>
                         <h2 style="margin-top: 20px;">Reviews</h2>
                         <?php
-                        if (isset($_SESSION['authentication'])) {
-                            if ($_SESSION['authentication'] === true) {
-                                include_once 'dbconnect.php';
-                                $db = getDatabase();
-                                if ($_SESSION['accType'] === 'barbershop') {
-                                    $stmt = $db->prepare("SELECT * FROM shopreviews WHERE BarbershopID = '{$_SESSION['user-id']}'");
-                                    if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
-                                        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                                        foreach ($result as $x):
-                                            $temp = $x['ts'];
-                                            $date = date("m-d-Y", $temp);
-                                            ?>
-                                            <div style="width:100%; position:relative; border-bottom: .5px solid #ff442a; background-color: rgba(0,0,0,.6);">
-                                                <div style="width:100px; position:relative;">Reviewer: <?php echo $x['Reviewer'] ?></div>
-                                                <div style="width:150px; position:relative;"><?php echo $date ?></div>
-                                                <div style="width:100px; position:relative;">Rating: <?php echo $x['Rating'] ?> / 5</div>
-                                                <div style="width:80%; position:relative; border: .5px solid grey; left:19.5%; bottom:50.5px; min-height: 100px; background-color: white;"><?php echo $x['Review'] ?></div>
-                                            </div>
-                                            <?php
-                                        endforeach;
-                                    }
-                                } elseif ($_SESSION['accType'] === 'barber') {
-                                    $stmt = $db->prepare("SELECT * FROM barbereviews WHERE BarberID = '{$_SESSION['user-id']}'");
-                                    if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
-                                        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                                        foreach ($result as $x):
-                                            ?>
-                                            <div style="width:100%; position:relative; border-bottom: .5px solid #ff442a; margin-bottom: 15px; background-color: rgba(0,0,0,.6);">
-                                                <div style="width:100px; position:relative;">Reviewer: <?php echo $x['Reviewer'] ?></div>
-                                                <div style="width:150px; position:relative;"><?php echo $x['ts'] ?></div>
-                                                <div style="width:100px; position:relative;">Rating: <?php echo $x['Rating'] ?> / 5</div>
-                                                <div style="width:80%; position:relative; border: .5px solid grey; left:19.5%; bottom:50.5px; min-height: 100px; background-color: white;"><?php echo $x['Review'] ?></div>
-                                            </div>
-                                            <?php
-                                        endforeach;
-                                    } else {
-                                        echo 'No Reviews for this profile yet.';
-                                    }
-                                } elseif ($_SESSION['accType'] === 'customer') {
-                                    header("Location: settings.php");
-                                }
+                        include_once 'dbconnect.php';
+                        $db = getDatabase();
+                        if ($_SESSION['accType'] === 'barbershop') {
+                            $stmt = $db->prepare("SELECT * FROM shopreviews WHERE BarbershopID = '{$_SESSION['user-id']}'");
+                            if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
+                                $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                foreach ($result as $x):
+                                    $temp = $x['ts'];
+                                    $date = date("m-d-Y", $temp);
+                                    ?>
+                                    <div style="width:100%; position:relative; border-bottom: .5px solid #ff442a; background-color: rgba(0,0,0,.6);">
+                                        <div style="width:100px; position:relative;">Reviewer: <?php echo $x['Reviewer'] ?></div>
+                                        <div style="width:150px; position:relative;"><?php echo $date ?></div>
+                                        <div style="width:100px; position:relative;">Rating: <?php echo $x['Rating'] ?> / 5</div>
+                                        <div style="width:80%; position:relative; border: .5px solid grey; left:19.5%; bottom:50.5px; min-height: 100px; background-color: white;"><?php echo $x['Review'] ?></div>
+                                    </div>
+                                    <?php
+                                endforeach;
                             }
+                        } elseif ($_SESSION['accType'] === 'barber') {
+                            $stmt = $db->prepare("SELECT * FROM barbereviews WHERE BarberID = '{$_SESSION['user-id']}'");
+                            if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
+                                $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                foreach ($result as $x):
+                                    ?>
+                                    <div style="width:100%; position:relative; border-bottom: .5px solid #ff442a; margin-bottom: 15px; background-color: rgba(0,0,0,.6);">
+                                        <div style="width:100px; position:relative;">Reviewer: <?php echo $x['Reviewer'] ?></div>
+                                        <div style="width:150px; position:relative;"><?php echo $x['ts'] ?></div>
+                                        <div style="width:100px; position:relative;">Rating: <?php echo $x['Rating'] ?> / 5</div>
+                                        <div style="width:80%; position:relative; border: .5px solid grey; left:19.5%; bottom:50.5px; min-height: 100px; background-color: white;"><?php echo $x['Review'] ?></div>
+                                    </div>
+                                    <?php
+                                endforeach;
+                            } else {
+                                echo 'No Reviews for this profile yet.';
+                            }
+                        } elseif ($_SESSION['accType'] === 'customer') {
+                            header("Location: settings.php");
                         }
                     }
                 }
