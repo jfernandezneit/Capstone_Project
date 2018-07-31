@@ -20,6 +20,8 @@
                 </form>
                 <?php
                 include_once 'login.php';
+                include_once 'dbconnect.php';
+                 
                 if (isset($_SESSION['authentication'])) {
                     if ($_SESSION['authentication'] === true) {
                         echo "<a href='logout.php' style='position:relative;text-decoration:none; color:lightgrey; left: 877px;'>Log Out</a>";
@@ -48,8 +50,7 @@
                     </form>
                 </div>
                 <div>
-                    <?php
-                    include_once 'dbconnect.php';
+                    <?php                    
 
                     $db = getDatabase();
                     $zip = filter_input(INPUT_POST, 'zip-result');

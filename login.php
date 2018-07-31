@@ -4,7 +4,7 @@ session_start();
 include_once 'dbconnect.php';
 $db = getDatabase();
 
-$_SESSION['username'] = filter_input(INPUT_POST, 'loginUsername');
+$username = filter_input(INPUT_POST, 'loginUsername');
 $password = filter_input(INPUT_POST, 'loginPass');
 $account = filter_input(INPUT_POST, 'loginAcc');
 
@@ -14,7 +14,7 @@ if (isset($_POST['login'])) {
         if ($account === 'barbershop') {
             $stmt = $db->prepare("SELECT BarbershopID, Username, Password FROM barbershops WHERE Username = :userName AND Password = :userPassword");
             $binds = array(
-                ":userName" => $_SESSION['username'],
+                ":userName" => $username,
                 ":userPassword" => SHA1($password)
             );
 
@@ -30,7 +30,7 @@ if (isset($_POST['login'])) {
         } elseif ($account === 'barber') {
             $stmt = $db->prepare("SELECT BarberID, Username, Password FROM barbers WHERE Username = :userName AND Password = :userPassword");
             $binds = array(
-                ":userName" => $_SESSION['username'],
+                ":userName" => $username,
                 ":userPassword" => SHA1($password)
             );
 
@@ -46,7 +46,7 @@ if (isset($_POST['login'])) {
         } elseif ($account === 'customer') {
             $stmt = $db->prepare("SELECT CustomerID ,Username, Password FROM barbercust WHERE Username = :userName AND Password = :userPassword");
             $binds = array(
-                ":userName" => $_SESSION['username'],
+                ":userName" => $username,
                 ":userPassword" => SHA1($password)
             );
 

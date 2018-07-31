@@ -1,6 +1,7 @@
 <?php
 include_once 'login.php';
-$_SESSION['authentication'] = false;
+$check = session_unset();
+$check2 = session_destroy();
 header('Location: index.php' );
 /* 
  * To change this license header, choose License Headers in Project Properties.
