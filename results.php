@@ -9,12 +9,12 @@
     <body>
         <div id="wrapper">
             <div id="nav">
-                <a id="btn-home"href="index.php" style="text-decoration:none; width:200px;"><div style="color:white;">Barber<span style="color:#ff442a;">Stop</span></div></a>
-                <form method="POST"action="#" style="position:relative; left:42%; top:38px; width:450px;">
+                <a id="btn-home" href="index.php" style="text-decoration:none; width:250px;"><div style="color:white; width:250px">Barber<span style="color:#ff442a;">Stop</span></div></a>
+                <form method="GET" action="results-search.php" style="position:relative; left:42%; top:38px; width:450px;">
                     <input type="text" name="search">
-                    <input id="action1" type="radio" value="Barbershop" name="action">
+                    <input id="action1" type="radio" value="Barbershop" name="searchAction">
                     <label for="action1">Barbershop</label>
-                    <input type="radio" name="action" value="Barber">
+                    <input id="action2" type="radio" value="Barber" name="searchAction">
                     <label for="action2">Barber</label>
                     <input type="submit" name="submit">
                 </form>
@@ -54,10 +54,10 @@
 
                     $db = getDatabase();
                     $zip = filter_input(INPUT_POST, 'zip-result');
-                    $tempname = filter_input(INPUT_POST, 'barbname-result');
+                    $search = filter_input(INPUT_POST, 'barbname-result');
                     $stmt = $db->prepare("SELECT * FROM barbershops WHERE Zip = '$zip'");
-                    if (isset($tempname)) {
-                        $stmt = $db->prepare("SELECT * FROM barbershops WHERE Zip = '$zip' OR BarbershopName = '$tempname'");
+                    if (isset($search)) {
+                        $stmt = $db->prepare("SELECT * FROM barbershops WHERE Zip = '$zip' OR BarbershopName = '$search'");
                     }
                     $results = array();
                     if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
@@ -70,7 +70,7 @@
                                 <div style="position:relative; left: 150px; top:5px; margin-top:5px;">Zip: <?php echo $x['Zip']; ?></div>
                                 <div style="position:relative; left: 150px; top:5px; margin-top:5px;">Number: <?php echo $x['PhoneNumber']; ?></div>
                                 <div style="position:relative; left: 150px; top:5px; margin-top:5px;">Rating: <?php echo $x['Rating'] . " / 5"; ?></div>
-                                <div style="position:relative; left: 525px;"><a style="text-decoration: none; color:lightgrey" href="results-barbers.php?id=<?php echo $x['BarbershopID'] ?>&barbershopname=<?php echo $x['BarbershopName'] ?>">Set Appointment</a></div>
+                                <div style="position:relative; left: 525px;"><a style="text-decoration: none; color:lightgrey" href="results-barbers.php?barbershop-id=<?php echo $x['BarbershopID'] ?>&barbershop-name=<?php echo $x['BarbershopName'] ?>">Set Appointment</a></div>
                             </div>                    
                             <?php
                         endforeach;

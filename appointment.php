@@ -13,12 +13,12 @@ and open the template in the editor.
     <body>
         <div id="wrapper">
             <div id="nav">
-                <a id="btn-home"href="index.php" style="text-decoration:none; width:200px;"><div style="color:white;">Barber<span style="color:#ff442a;">Stop</span></div></a>
-                <form method="POST"action="#" style="position:relative; left:42%; top:38px; width:450px;">
+                <a id="btn-home" href="index.php" style="text-decoration:none; width:250px;"><div style="color:white; width:250px">Barber<span style="color:#ff442a;">Stop</span></div></a>
+                <form method="GET" action="results-search.php" style="position:relative; left:42%; top:38px; width:450px;">
                     <input type="text" name="search">
-                    <input id="action1" type="radio" value="Barbershop" name="action">
+                    <input id="action1" type="radio" value="Barbershop" name="searchAction">
                     <label for="action1">Barbershop</label>
-                    <input type="radio" name="action" value="Barber">
+                    <input id="action2" type="radio" value="Barber" name="searchAction">
                     <label for="action2">Barber</label>
                     <input type="submit" name="submit">
                 </form>
@@ -43,99 +43,109 @@ and open the template in the editor.
                     if ($_SESSION['authentication'] === true) {
                         if (isset($_SESSION['user-id'])) {
                             include_once 'dbconnect.php';
-
+                            include_once 'functions.php';
                             $db = getDatabase();
                             $barberID = filter_input(INPUT_GET, 'barber-id');
-                            $barbershopID = filter_input(INPUT_GET, 'shop-id');
-                            $stmt1 = $db->prepare("SELECT * FROM daystimesavail WHERE BarberID = '$barberID' AND BarbershopID = '$barbershopID'");
-                            $stmt2 = $db->prepare("SELECT * FROM barbers WHERE BarberID = $barberID");
-                            if ($stmt1->execute() > 0 && $stmt1->rowCount() > 0) {
-                                $result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
-                                //print_r($result);
-                                //die('here');
-                                if ($stmt2->execute() > 0 && $stmt2->rowCount() > 0) {
-                                    $result2 = $stmt2->fetch(PDO::FETCH_ASSOC);
-                                    ?>
-                                    <div style="width:480px; margin:auto; background-color:rgba(0,0,0,.6); border-bottom: 1.5px solid #ff442a; position:relative; top:10px;">
-                                        <div style="font-size:25px; position:relative; left:5px; width:20%"><?php echo $result2['BarberName'] ?></div>
-                                        <div style="width:50px; position:relative; left:75px; bottom:20px;"><?php echo $result2['Rating'] ?> / 5</div>                            
-                                        <form method="POST" action="#">
-                                            <label for="daysAvail" style="margin-left: 5px;">Days Available:</label>
-                                            <select id="daysAvail" name="daysAvail">
-                                                <?php
-                                                if ($result1['Monday'] != '') {
-                                                    echo "<option value='Monday'>Monday</option>";
-                                                }
-                                                if ($result1['Tuesday'] != '') {
-                                                    echo "<option value='Tuesday'>Tuesday</option>";
-                                                }
-                                                if ($result1['Wednesday'] != '') {
-                                                    echo "<option value='Wednesday'>Wednesday</option>";
-                                                }
-                                                if ($result1['Thursday'] != '') {
-                                                    echo "<option value='Thursday'>Thursday</option>";
-                                                }
-                                                if ($result1['Friday'] != '') {
-                                                    echo "<option value='Friday'>Friday</option>";
-                                                }
-                                                if ($result1['Saturday'] != '') {
-                                                    echo "<option value='Saturday'>Saturday</option>";
-                                                }
-                                                if ($result1['Sunday'] != '') {
-                                                    echo "<option value='Sunday'>Sunday</option>";
-                                                }
-                                                ?>
-                                            </select>                            
-                                            <input type="submit" name="submit" value="Set Day">
-                                        </form>
-                                        <hr>
+                            $result1 = getDays();
+                            $result2 = getBarberID();
+                            if ($result1 === "Barber has not set his times yet.") {
+                                echo $result1;
+                            }
+                            if ($result2 === "Not a valid barber. (002)") {
+                                echo $result2;
+                            }
+                            ?>
+                            <div style="width:480px; margin:auto; background-color:rgba(0,0,0,.6); border-bottom: 1.5px solid #ff442a; position:relative; top:10px;">
+                                <div>
+                                    <a href="profiles.php?barber-id=<?php echo $result2['BarberID']; ?>"><img style="width:150px;margin:5px 0px 0px 5px;" src="uploads/barbers/barberID<?php echo $result2['BarberID']; ?>/profilepic.jpg"/></a>
+                                    <div style="font-size:25px; position:relative; left:5px; width:20%"><?php echo $result2['BarberName'] ?></div>
+                                    <div style="width:50px; position:relative; left:75px; bottom:20px;"><?php echo $result2['Rating'] ?> / 5</div>
+                                </div>
+                                <form method="POST" action="#">
+                                    <label for="daysAvail" style="margin-left: 5px;">Days Available:</label>
+                                    <select id="daysAvail" name="daysAvail">
                                         <?php
-                                        $appDay = filter_input(INPUT_POST, 'daysAvail');
-                                        if (isset($appDay)) {
-                                            $stmt3 = $db->prepare("INSERT INTO appointments SET CustomerID = {$_SESSION['user-id']}, BarberID = $barberID, Day = '$appDay'");
-                                            if ($stmt3->execute() > 0 && $stmt3->rowCount() > 0) {
-                                                ?>
-                                                <form method="POST" action="#">
-                                                    <label for="timesAvail">Times Available:</label>
-                                                    <select id="timesAvail" name="timesAvail">
-                                                        <?php
-                                                        $times = explode(",", $result1[$appDay]);
-
-                                                        for ($index = 0; $index < count($times); $index++):
-                                                            echo "<option value='$times[$index]'>$times[$index]</option>";
-                                                        endfor;
-                                                        ?>
-                                                    </select>
-                                                    <input type="submit" name="submit" value="Set Appointment">
-                                                </form>
-                                                <?php
-                                            }
+                                        if ($result1['Monday'] != '') {
+                                            echo "<option value='Monday'>Monday</option>";
+                                        }
+                                        if ($result1['Tuesday'] != '') {
+                                            echo "<option value='Tuesday'>Tuesday</option>";
+                                        }
+                                        if ($result1['Wednesday'] != '') {
+                                            echo "<option value='Wednesday'>Wednesday</option>";
+                                        }
+                                        if ($result1['Thursday'] != '') {
+                                            echo "<option value='Thursday'>Thursday</option>";
+                                        }
+                                        if ($result1['Friday'] != '') {
+                                            echo "<option value='Friday'>Friday</option>";
+                                        }
+                                        if ($result1['Saturday'] != '') {
+                                            echo "<option value='Saturday'>Saturday</option>";
+                                        }
+                                        if ($result1['Sunday'] != '') {
+                                            echo "<option value='Sunday'>Sunday</option>";
                                         }
                                         ?>
-                                    </div>
-                                    <?php
-                                    $appTime = filter_input(INPUT_POST, 'timesAvail');
-                                    $stmt4 = $db->prepare("SELECT AppointmentID FROM appointments WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID");
-                                    if ($stmt4->execute() > 0 && $stmt4->rowCount() > 0) {
-                                        $results = $stmt4->fetchAll(PDO::FETCH_ASSOC);
-                                        $appID = end($results);
-                                        $stmt5 = $db->prepare("SELECT Day FROM appointments WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID AND AppointmentID = {$appID['AppointmentID']}");
-                                        if (isset($appTime)) {
-                                            $stmt6 = $db->prepare("UPDATE appointments SET Time = '$appTime' WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID AND AppointmentID = {$appID['AppointmentID']}");
-                                            if ($stmt5->execute() > 0 && $stmt5->rowCount() > 0 && $stmt6->execute() > 0 && $stmt6->rowCount() > 0) {
-                                                $result = $stmt5->fetch(PDO::FETCH_ASSOC);
-                                                header("Location: successApp.php?day={$result['Day']}&time=$appTime");
-                                            }
-                                        }
+                                    </select>                            
+                                    <input type="submit" name="submit" value="Set Day">
+                                </form>
+                                <hr>
+                                <?php
+                                $appDay = filter_input(INPUT_POST, 'daysAvail');
+                                if (isset($appDay)) {
+                                    $output = setApp($appDay);
+                                    if ($output === "success") {
+                                        ?>
+                                        <form method="POST" action="#">
+                                            <label for="timesAvail">Times Available:</label>
+                                            <select id="timesAvail" name="timesAvail">
+                                                <?php
+                                                $times = explode(",", $result1[$appDay]);
+
+                                                for ($index = 0; $index < count($times); $index++):
+                                                    echo "<option value='$times[$index]'>$times[$index]</option>";
+                                                endfor;
+                                                ?>
+                                            </select>
+                                            <input type="submit" name="submit" value="Set Appointment">
+                                        </form>
+                                        <?php
+                                    } elseif ($output === "failed") {
+                                        echo $output;
+                                    } else {
+                                        echo "<br/>";
+                                        echo "Please try to set appointment again please.";
                                     }
                                 } else {
-                                    echo "Not a valid barber1";
+                                    echo "<br/>";
+                                    echo "Please choose a day first.";
                                 }
-                            } else {
-                                echo "Not a valid barber2";
+                                ?>
+                            </div>
+                            <?php
+                            $appTime = filter_input(INPUT_POST, 'timesAvail');
+                            $output = getDays();
+                            if ($output === "Barber has not set his times yet.") {
+                                echo $output;
+                            }
+                            $results = getAppID();
+                            if ($results === "failed") {
+                                echo $results;
+                            }
+                            $appID = end($results);
+                            $result = getDay();
+                            if (isset($appTime)) {
+                                $stmt6 = $db->prepare("UPDATE appointments SET Time = '$appTime' WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID AND AppointmentID = {$appID['AppointmentID']}");
+                                if ($stmt6->execute() > 0 && $stmt6->rowCount() > 0) {
+                                    echo "SUCCESS";
+                                    //header("Location: successApp.php?day={$result['Day']}&time=$appTime");
+                                }
+                            } elseif(isset($appTime) && empty($appTime)) {
+                                echo "Please choose a valid time.";
                             }
                         } else {
-                            echo "You can not set appointments with this account.";
+                            echo "You do not have access to this page please sign in.";
                         }
                     } else {
                         echo "You do not have access to this page please sign in.";

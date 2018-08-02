@@ -13,12 +13,12 @@ and open the template in the editor.
     <body>
         <div id="wrapper">
             <div id="nav">
-                <a id="btn-home" href="index.php" style="text-decoration:none; width:200px;"><div style="color:white;">Barber<span style="color:#ff442a;">Stop</span></div></a>
-                <form method="POST" action="#" style="position:relative; left:42%; top:38px; width:450px;">
+                <a id="btn-home" href="index.php" style="text-decoration:none; width:250px;"><div style="color:white; width:250px">Barber<span style="color:#ff442a;">Stop</span></div></a>
+                <form method="GET" action="results-search.php" style="position:relative; left:42%; top:38px; width:450px;">
                     <input type="text" name="search">
-                    <input id="action1" type="radio" value="Barbershop" name="action">
+                    <input id="action1" type="radio" value="Barbershop" name="searchAction">
                     <label for="action1">Barbershop</label>
-                    <input type="radio" name="action" value="Barber">
+                    <input id="action2" type="radio" value="Barber" name="searchAction">
                     <label for="action2">Barber</label>
                     <input type="submit" name="submit">
                 </form>
@@ -59,7 +59,6 @@ and open the template in the editor.
                             <br/>
                             <div style="width:30%; position:relative; left:5px;">Address: <?php echo $profileAddress . ", " . $profileZip ?></div>
                             <div style="width:20%; position:relative; left:5px;">Phone: <?php echo $profilePhone ?></div>
-                            <div style="width:100px; font-size: 18px; position:relative; left:93.5%;"><a href="settings.php" style="text-decoration: none; color:white;">Settings</a></div>
                             <?php
                             $stmt2 = $db->prepare("SELECT * FROM barbers WHERE BarbershopID = '$barbershopID'");
                             if ($stmt2->execute() > 0 && $stmt2->rowCount() > 0) {
@@ -87,7 +86,7 @@ and open the template in the editor.
 
                             <div style="width:30%; position:relative; left:5px;">Barber Name: <?php echo $profileName ?></div>
                             <div style="width:10%; position:relative; left:5px;">Rating: <?php echo $profileRating ?> / 5</div>
-                            <div style="width:100px; font-size: 18px; position:relative; left:93.5%;"><a href="settings.php" style="text-decoration: none; color:white;">Settings</a></div>
+                            <div style="width:10%; position:relative; left:5px;"><a style="text-decoration: none; color: white;"href="appointment.php?barber-id=<?php echo $result['BarberID'];?>">Book with me</a></div>
                             <br/>
                             <?php
                         } else {

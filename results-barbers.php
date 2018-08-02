@@ -13,12 +13,12 @@ and open the template in the editor.
     <body>
         <div id="wrapper">
             <div id="nav">
-                <a id="btn-home" href="index.php" style="text-decoration:none; width:200px;"><div style="color:white;">Barber<span style="color:#ff442a;">Stop</span></div></a>
-                <form method="POST"action="#" style="position:relative; left:42%; top:38px; width:450px;">
+                <a id="btn-home" href="index.php" style="text-decoration:none; width:250px;"><div style="color:white; width:250px">Barber<span style="color:#ff442a;">Stop</span></div></a>
+                <form method="GET" action="results-search.php" style="position:relative; left:42%; top:38px; width:450px;">
                     <input type="text" name="search">
-                    <input id="action1" type="radio" value="Barbershop" name="action">
+                    <input id="action1" type="radio" value="Barbershop" name="searchAction">
                     <label for="action1">Barbershop</label>
-                    <input type="radio" name="action" value="Barber">
+                    <input id="action2" type="radio" value="Barber" name="searchAction">
                     <label for="action2">Barber</label>
                     <input type="submit" name="submit">
                 </form>
@@ -42,11 +42,10 @@ and open the template in the editor.
                 include_once 'dbconnect.php';
 
                 $db = getDatabase();
-                $barbershopID = filter_input(INPUT_GET, 'id');
-                $barbershopName = filter_input(INPUT_GET, 'barbershopname');
+                $barbershopID = filter_input(INPUT_GET, 'barbershop-id');
+                $barbershopName = filter_input(INPUT_GET, 'barbershop-name');
                 $stmt = $db->prepare("SELECT * FROM barbers WHERE BarbershopID = $barbershopID");
                 $results = array();
-
                 if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
                     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     ?>
@@ -61,7 +60,7 @@ and open the template in the editor.
                             <tr>
                                 <td style="text-align:center;"><a style="text-decoration:none; color:lightgrey;" href="persProfile.php?barber-id=<?php echo$index['BarberID'] ?>"><?php echo $index['BarberName'] ?></a></td>
                                 <td style="text-align:center;"><?php echo $index['Rating'] ?> / 5</td>
-                                <td style="text-align:center;"><a style="text-decoration:none; color:lightgrey;" href="appointment.php?barber-id=<?php echo $index['BarberID'] ?>&shop-id=<?php echo $index['BarbershopID'] ?>">Book Now</a></td>
+                                <td style="text-align:center;"><a style="text-decoration:none; color:lightgrey;" href="appointment.php?barber-id=<?php echo $index['BarberID'] ?>&barbershop-id=<?php echo $index['BarbershopID'] ?>">Book Now</a></td>
                             </tr>
                             <?php
                         endforeach;
