@@ -95,7 +95,7 @@ and open the template in the editor.
                                 $appDay = filter_input(INPUT_POST, 'daysAvail');
                                 if (isset($appDay)) {
                                     $output = setApp($appDay);
-                                    if ($output === "success") {
+                                    if ($output !== FALSE) {
                                         ?>
                                         <form method="POST" action="#">
                                             <label for="timesAvail">Times Available:</label>
@@ -111,8 +111,10 @@ and open the template in the editor.
                                             <input type="submit" name="submit" value="Set Appointment">
                                         </form>
                                         <?php
-                                    } elseif ($output === "failed") {
-                                        echo $output;
+                                        print_r($times);
+                                        die('neihjnkjfsdk');
+                                    } elseif ($output === false) {
+                                        echo "failed to create appointment.";
                                     } else {
                                         echo "<br/>";
                                         echo "Please try to set appointment again please.";
@@ -130,15 +132,22 @@ and open the template in the editor.
                                 echo $output;
                             }
                             $results = getAppID();
-                            if ($results === "failed") {
-                                echo $results;
+                            if ($results === false) {
+                                //echo $results;
                             }
                             $appID = end($results);
                             $result = getDay();
+                            $appDay1 = $result['Day'];
                             if (isset($appTime)) {
                                 $stmt6 = $db->prepare("UPDATE appointments SET Time = '$appTime' WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID AND AppointmentID = {$appID['AppointmentID']}");
+                                $output = revTime($appDay1, $appTime);
+                                print_r($output);
+                                die('ansdhjasbdjh');
+                                if($output !== "success"){
+                                    echo "failed to update Days and Times available for barber.";
+                                }                                
                                 if ($stmt6->execute() > 0 && $stmt6->rowCount() > 0) {
-                                    echo "SUCCESS";
+                                    echo "SUCCESS";                                    
                                     //header("Location: successApp.php?day={$result['Day']}&time=$appTime");
                                 }
                             } elseif(isset($appTime) && empty($appTime)) {

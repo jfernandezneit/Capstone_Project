@@ -48,7 +48,7 @@ function getDay() {
     $barberID = filter_input(INPUT_GET, 'barber-id');
     $stmt = $db->prepare("SELECT Day FROM appointments WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID AND AppointmentID = {$appID['AppointmentID']}");
     $result = "failed";
-    if($stmt->execute() > 0 && $stmt->rowCount() > 0){
+    if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;
     } else {
@@ -73,12 +73,11 @@ function setApp($appDay) {
     $barberID = filter_input(INPUT_GET, 'barber-id');
     $db = getDatabase();
     $stmt = $db->prepare("INSERT INTO appointments SET CustomerID = {$_SESSION['user-id']}, BarberID = $barberID, Day = '$appDay'");
-    $output = 'failed';
     if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
         $output = 'success';
         return $output;
     } else {
-        return $output;
+        return false;
     }
 }
 
@@ -86,11 +85,51 @@ function getAppID() {
     $db = getDatabase();
     $barberID = filter_input(INPUT_GET, 'barber-id');
     $stmt = $db->prepare("SELECT AppointmentID FROM appointments WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID");
-    $result = "failed";
     if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     } else {
+        return false;
+    }
+}
+
+function getTimes($day) {
+    $db = getDatabase();
+    $barberID = filter_input(INPUT_GET, 'barber-id');
+    $stmt = $db->prepare("SELECT $day FROM daystimesavail WHERE BarberID = $barberID");
+    if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;
+    } else {
+        return false;
+    }
+}
+
+function revTime($day, $time) {
+    $db = getDatabase();
+    $barberID = filter_input(INPUT_GET, 'barber-id');
+    $temp = getTimes($day);
+    $tempTimes = explode(",", $temp[$day]);
+    $key = array_search($time, $tempTimes, true);
+    $cnt = 0;
+
+    if ($key !== false) {
+        unset($tempTimes[$key]);
+        print_r($tempTimes);
+        $times = "";
+        reset($tempTimes);
+        for ($x = 0; $x < count($tempTimes) - 1; $x++):
+            $times .= $tempTimes[$x] . ",";
+        endfor;
+        print_r($times);
+        $stmt = $db->prepare("UPDATE daystimesavail SET $day = '$times' WHERE BarberID = $barberID");
+        if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
+            $result = "success";
+            return $result;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
     }
 }
