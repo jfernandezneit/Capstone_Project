@@ -102,9 +102,12 @@ and open the template in the editor.
                                             <select id="timesAvail" name="timesAvail">
                                                 <?php
                                                 $times = explode(",", $result1[$appDay]);
-
                                                 for ($index = 0; $index < count($times); $index++):
-                                                    echo "<option value='$times[$index]'>$times[$index]</option>";
+                                                    if ($times[$index] === " " || $times[$index] === ", ") {
+                                                        unset($times[$index]);
+                                                    } else {
+                                                        echo "<option value='$times[$index]'>$times[$index]</option>";
+                                                    }
                                                 endfor;
                                                 ?>
                                             </select>
@@ -143,14 +146,14 @@ and open the template in the editor.
                                 $output = revTime($appDay1, $appTime);
                                 print_r($output);
                                 die('ansdhjasbdjh');
-                                if($output !== "success"){
+                                if ($output !== "success") {
                                     echo "failed to update Days and Times available for barber.";
-                                }                                
+                                }
                                 if ($stmt6->execute() > 0 && $stmt6->rowCount() > 0) {
-                                    echo "SUCCESS";                                    
+                                    echo "SUCCESS";
                                     //header("Location: successApp.php?day={$result['Day']}&time=$appTime");
                                 }
-                            } elseif(isset($appTime) && empty($appTime)) {
+                            } elseif (isset($appTime) && empty($appTime)) {
                                 echo "Please choose a valid time.";
                             }
                         } else {

@@ -112,16 +112,30 @@ function revTime($day, $time) {
     $tempTimes = explode(",", $temp[$day]);
     $key = array_search($time, $tempTimes, true);
     $cnt = 0;
-
+    $key2 = $key + 1;
     if ($key !== false) {
         unset($tempTimes[$key]);
+        $tempTimes[$key] = $tempTimes[$key2];
+        unset($tempTimes[$key2]);
+        $key3 = $key2 + 1;
+        for ($x = $key2; $x < count($tempTimes); $x++):
+            $tempTimes[$x] = $tempTimes[$key3];
+            unset($tempTimes[$key3]);
+            $key3++;
+        endfor;
         print_r($tempTimes);
         $times = "";
-        reset($tempTimes);
-        for ($x = 0; $x < count($tempTimes) - 1; $x++):
-            $times .= $tempTimes[$x] . ",";
+        for ($x = 0; $x < count($tempTimes); $x++):
+            $times .= $tempTimes[$x] . ", ";
         endfor;
-        print_r($times);
+        $pos = strlen($times);
+        $str = "Hello World";
+        $str1 = substr($times, 0, $pos - 1);
+        $str2 = substr($times, $pos + 1, 1);
+//        $str2 = substr($str, 5, 7);
+//        echo $str1 . $str2;
+        //unset($times[$pos]);
+        print_r($str1 . $str2);
         $stmt = $db->prepare("UPDATE daystimesavail SET $day = '$times' WHERE BarberID = $barberID");
         if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
             $result = "success";
