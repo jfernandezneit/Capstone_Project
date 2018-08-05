@@ -32,7 +32,7 @@
             </div><!-- End of nav div -->
 
             <div id="content" style="background-color: white; min-height: 300px;">
-                <div style="width:100%; ; position: relative; top: 50px;">
+                <div style="width:100%; ; position: relative; top:3px;">
                     <?php
                     include_once 'functions.php';
                     $action = filter_input(INPUT_GET, 'searchAction');
@@ -40,7 +40,7 @@
                     if ($action === 'Barbershop') {
                         foreach ($results as $x) {
                             ?>
-                            <div style="width:50%; margin:auto; margin-bottom: 15px; border-bottom: 1.5px solid #ff442a; background-color:rgba(0,0,0,.6); bottom:10px; position:relative; ">
+                            <div style="width:50%; margin:auto; margin-bottom: 15px; border-bottom: 1.5px solid #ff442a; background-color:rgba(0,0,0,.6); position:relative; ">
                                 <div><a href="profiles.php?barbershop-id=<?php echo $x['BarbershopID'];?>"><img style="width:50px;"src="uploads/barbershops/barbershopID<?php echo $x['BarbershopID']; ?>/profilepic.jpg"></a></div>
                                 <div>Shop Name:<?php echo $x['BarbershopName']; ?></div>
                                 <div>Address:<?php echo $x['Address']; ?></div>

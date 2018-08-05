@@ -101,12 +101,12 @@ and open the template in the editor.
                                             <label for="timesAvail">Times Available:</label>
                                             <select id="timesAvail" name="timesAvail">
                                                 <?php
-                                                $times = explode(",", $result1[$appDay]);
-                                                for ($index = 0; $index < count($times); $index++):
-                                                    if ($times[$index] === " " || $times[$index] === ", ") {
-                                                        unset($times[$index]);
+                                                $availTimes = explode(",", $result1[$appDay]);
+                                                for ($index = 0; $index < count($availTimes); $index++):
+                                                    if ($availTimes[$index] === " " || $availTimes[$index] === ", ") {
+                                                        unset($availTimes[$index]);
                                                     } else {
-                                                        echo "<option value='$times[$index]'>$times[$index]</option>";
+                                                        echo "<option value='$availTimes[$index]'>$availTimes[$index]</option>";
                                                     }
                                                 endfor;
                                                 ?>
@@ -114,8 +114,6 @@ and open the template in the editor.
                                             <input type="submit" name="submit" value="Set Appointment">
                                         </form>
                                         <?php
-                                        print_r($times);
-                                        die('neihjnkjfsdk');
                                     } elseif ($output === false) {
                                         echo "failed to create appointment.";
                                     } else {
@@ -144,14 +142,11 @@ and open the template in the editor.
                             if (isset($appTime)) {
                                 $stmt6 = $db->prepare("UPDATE appointments SET Time = '$appTime' WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID AND AppointmentID = {$appID['AppointmentID']}");
                                 $output = revTime($appDay1, $appTime);
-                                print_r($output);
-                                die('ansdhjasbdjh');
                                 if ($output !== "success") {
                                     echo "failed to update Days and Times available for barber.";
                                 }
                                 if ($stmt6->execute() > 0 && $stmt6->rowCount() > 0) {
-                                    echo "SUCCESS";
-                                    //header("Location: successApp.php?day={$result['Day']}&time=$appTime");
+                                    header("Location: successApp.php?day={$result['Day']}&time=$appTime");
                                 }
                             } elseif (isset($appTime) && empty($appTime)) {
                                 echo "Please choose a valid time.";

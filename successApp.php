@@ -34,14 +34,17 @@ and open the template in the editor.
                 } else {
                     echo "<div style='width:125px; position: relative; left:875px; top:21px;'><a href='login-form.php' style='text-decoration:none; color:lightgrey;'>Log in |</a><a href='signup.php' style='text-decoration:none; color:lightgrey;'> Sign up</a></div>";
                 }
-                $day = filter_input(INPUT_GET,'day');
-                $time = filter_input(INPUT_GET,'time');
+                $day = filter_input(INPUT_GET, 'day');
+                $time = filter_input(INPUT_GET, 'time');
                 ?>
             </div><!-- End of nav div -->
 
-            <div id="content" style="background-color: white; min-height: 300px;">                
-                <div>successfully set appointment</div>
-                <div>appointment is: <?php echo $day . " at " . $time;?></div>
+            <div id="content" style="background-color: white; min-height: 300px;"> 
+                <div style="margin:auto; width:200px;">
+                    <div>Successfully set appointment</div>
+                    <br/>
+                    <div>Appointment is: <b><?php echo $day ?></b> at <b><?php echo $time; ?></b></div>
+                </div>
             </div><!-- End of content div -->
 
         </div> <!--End of wrapper div -->

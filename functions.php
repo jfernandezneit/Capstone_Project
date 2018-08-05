@@ -111,7 +111,6 @@ function revTime($day, $time) {
     $temp = getTimes($day);
     $tempTimes = explode(",", $temp[$day]);
     $key = array_search($time, $tempTimes, true);
-    $cnt = 0;
     $key2 = $key + 1;
     if ($key !== false) {
         unset($tempTimes[$key]);
@@ -123,20 +122,20 @@ function revTime($day, $time) {
             unset($tempTimes[$key3]);
             $key3++;
         endfor;
-        print_r($tempTimes);
-        $times = "";
+        $availTimes = "";
+        $lastElement = end($tempTimes);
         for ($x = 0; $x < count($tempTimes); $x++):
-            $times .= $tempTimes[$x] . ", ";
+            if ($tempTimes[$x] === $lastElement) {
+                $availTimes .= $tempTimes[$x] . ",  ";
+            } else {
+                $availTimes .= $tempTimes[$x] . ",";
+            }
         endfor;
-        $pos = strlen($times);
-        $str = "Hello World";
-        $str1 = substr($times, 0, $pos - 1);
-        $str2 = substr($times, $pos + 1, 1);
-//        $str2 = substr($str, 5, 7);
-//        echo $str1 . $str2;
-        //unset($times[$pos]);
-        print_r($str1 . $str2);
-        $stmt = $db->prepare("UPDATE daystimesavail SET $day = '$times' WHERE BarberID = $barberID");
+        $pos = strlen($availTimes);
+        $str1 = substr($availTimes, 0, $pos - 3 );
+        $str2 = substr($availTimes, $pos - 1, 1);
+        $availTimes = $str1 . $str2;
+        $stmt = $db->prepare("UPDATE daystimesavail SET $day = '$availTimes' WHERE BarberID = $barberID");
         if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
             $result = "success";
             return $result;
