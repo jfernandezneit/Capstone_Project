@@ -47,7 +47,7 @@ and open the template in the editor.
                             $db = getDatabase();
                             $barberID = filter_input(INPUT_GET, 'barber-id');
                             $result1 = getDays();
-                            $result2 = getBarberID();
+                            $result2 = getBarberInfo();
                             if ($result1 === "Barber has not set his times yet.") {
                                 echo $result1;
                             }

@@ -56,19 +56,6 @@ function getDay() {
     }
 }
 
-function getBarberID() {
-    $db = getDatabase();
-    $barberID = filter_input(INPUT_GET, 'barber-id');
-    $stmt = $db->prepare("SELECT * FROM barbers WHERE BarberID = $barberID");
-    $result = "Not a valid barber. (002)";
-    if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result;
-    } else {
-        return $result;
-    }
-}
-
 function setApp($appDay) {
     $barberID = filter_input(INPUT_GET, 'barber-id');
     $db = getDatabase();
@@ -132,7 +119,7 @@ function revTime($day, $time) {
             }
         endfor;
         $pos = strlen($availTimes);
-        $str1 = substr($availTimes, 0, $pos - 3 );
+        $str1 = substr($availTimes, 0, $pos - 3);
         $str2 = substr($availTimes, $pos - 1, 1);
         $availTimes = $str1 . $str2;
         $stmt = $db->prepare("UPDATE daystimesavail SET $day = '$availTimes' WHERE BarberID = $barberID");
@@ -146,3 +133,65 @@ function revTime($day, $time) {
         return false;
     }
 }
+
+function getShopInfo() {
+    $db = getDatabase();
+    $stmt = $db->prepare("SELECT * FROM barbershops WHERE BarbershopID = {$_SESSION['user-id']}");
+    if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    } else {
+        $result = false;
+        return $result;
+    }
+}
+
+function getBarberInfo() {
+    $db = getDatabase();
+    $barberID = filter_input(INPUT_GET, 'barber-id');
+    $stmt = $db->prepare("SELECT * FROM barbers WHERE BarberID = $barberID");
+    $result = "Not a valid barber. (002)";
+    if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    } else {
+        return $result;
+    }
+}
+
+function insShop() {
+    $db = getDatabase();
+    $shopName = filter_input(INPUT_POST, 'shopName');
+    $shopUsername = filter_input(INPUT_POST, 'shopUsername');
+    $shopTemp = filter_input(INPUT_POST, 'shopPass');
+    $shopPass = sha1($shopTemp);
+    $shopAddress = filter_input(INPUT_POST, 'shopAddress');
+    $shopZip = filter_input(INPUT_POST, 'shopZip');
+    $shopPhone = filter_input(INPUT_POST, 'shopPhone');
+
+    $stmt = $db->prepare("INSERT INTO barbershops SET BarbershopName = :shopName , Username = :shopUsername, Password = :shopPass, Address = :shopAddress, Zip = :shopZip, PhoneNumber = :shopPhone");
+
+    $binds = array(
+        ":shopName" => $shopName,
+        ":shopUsername" => $shopUsername,
+        ":shopPass" => $shopPass,
+        ":shopAddress" => $shopAddress,
+        ":shopZip" => $shopZip,
+        ":shopPhone" => $shopPhone,
+    );
+    if ($stmt->execute($binds) && $stmt->rowCount() > 0) {
+         $stmt1 = $db->prepare("SELECT BarbershopID FROM barbershops WHERE Username = '$shopUsername' AND BarbershopName = '$shopName'");
+
+                if ($stmt1->execute() > 0 && $stmt1->rowCount() > 0) {
+                    $results = $stmt1->fetch(PDO::FETCH_ASSOC);
+                    $tmp_name = $_FILES['shopPic']['tmp_name'];
+                    $currentDir = getcwd();
+                    $checkdir = mkdir("$currentDir/uploads/barbershops/barbershopID{$results['BarbershopID']}", 0777, true);
+                    $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbershops' . DIRECTORY_SEPARATOR . 'barbershopID' . $results['BarbershopID'];
+                    $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
+                    $result = move_uploaded_file($tmp_name, $new_name);
+                    //header("Location: index.php");
+                }
+    }
+}
+    
