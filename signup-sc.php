@@ -5,11 +5,12 @@
 include_once 'dbconnect.php';
 
 $db = getDatabase();
-$action = filter_input(INPUT_POST, 'form-action');
+$action = filter_input(INPUT_GET, 'form-action');
 
 if (isset($action)) {
     if (!empty($action)) {
         if ($action === 'barbershop') {
+            include_once'form-barbershop.php';
             $shopName = filter_input(INPUT_POST, 'shopName');
             $shopUsername = filter_input(INPUT_POST, 'shopUsername');
             $shopTemp = filter_input(INPUT_POST, 'shopPass');
@@ -46,6 +47,7 @@ if (isset($action)) {
                 echo 'failed to create account';
             }
         } elseif ($action === 'barber') {
+            include_once'form-barber.php';
             $barbName = filter_input(INPUT_POST, 'barbName');
             $barbAffiliation = filter_input(INPUT_POST, 'barbAffiliation');
             $barbUsername = filter_input(INPUT_POST, 'barbUsername');
@@ -85,6 +87,7 @@ if (isset($action)) {
                 echo 'not a valid barbershop name';
             }
         } elseif ($action === 'customer') {
+            include_once'form-customer.php';
             $custUsername = filter_input(INPUT_POST, 'custUsername');
             $custTemp = filter_input(INPUT_POST, 'custPass');
             $custPass = sha1($custTemp);

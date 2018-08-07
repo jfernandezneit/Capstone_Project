@@ -41,72 +41,54 @@ and open the template in the editor.
                 <?php
                 if (isset($_SESSION['authentication'])) {
                     if ($_SESSION['authentication'] === true) {
-                        if($_SESSION['accType'] === 'barbershop'){
+                        if ($_SESSION['accType'] === 'barbershop') {
                             include_once 'functions.php';
                             include_once 'dbconnect.php';
                             $result = getShopInfo();
-                            if($result !== false){
-                        ?>
-                        <div style="width:75%; margin:auto;">
-                            <div>
-                                <form>
-                                    <div style="font-size:22px;"><b>Current info</b></div>
-                                    <hr>
-                                    <label>Shop Name: <b><?php echo $result['BarbershopName']?></b></label>
-                                    <br/>
-                                    <label>Shop Username: <b><?php echo $result['Username']?></b></label>
-                                    <br/>
-                                    <label>Shop Address: <b><?php echo $result['Address']?></b></label>
-                                    <br/>
-                                    <label>Shop Zip: <b><?php echo $result['Zip']?></b></label>
-                                    <br/>
-                                    <label>Shop Number: <b><?php echo $result['PhoneNumber']?></b></label>
-                                    <br/>
-                                    <div>Profile Picture:  <img style="width:175px;" src="./uploads/barbershops/barbershopID<?php$result['BarbershopID']?>/profilepic.jpg"/></div>
-                                    <br/>
-                                    <div style="font-size:22px;"><b>Change info</b></div>
-                                    <hr/>
-                                    <label for="shopName">Shop Name: </label>
-                                    <input type="text" name="shopName" id="shopName">
-                                    <br/>
-                                    <br/>
-                                    <label for="shopUsername">Username: </label>
-                                    <input type="text" name="shopUsername" id="shopName">
-                                    <br/>
-                                    <br/>
-                                    <label for="shopAddress">Shop Address: </label>
-                                    <input type="text" name="shopAddress" id="shopName">
-                                    <br/>
-                                    <br/>
-                                    <label for="shopZip">Shop Zip: </label>
-                                    <input type="text" name="shopZip" id="shopName">
-                                    <br/>
-                                    <br/>
-                                    <label for="shopPhone">Shop Phone: </label>
-                                    <input type="text" name="shopPhone" id="shopName">
-                                    <br/>
-                                    <br/>
-                                    <label for="shopPic">Upload New image: </label>
-                                    <input id="shopPic" name="shopPic" type="file">
-                                    <br/>
-                                    <br/>
-                                    <input type="submit" name="submit" value="Save changes"/>
-                                </form>
-                            </div>
-                        </div>
-                        <?php
-                        if($_SERVER['REQUEST_METHOD'] === 'POST'){
-                            $result = insShop();
-                        }
-                        
+                            if ($result !== false) {
+                                ?>
+                                <div style="width:75%; margin:auto;">
+                                    <div>
+
+                                        <div style="font-size:22px;"><b>Current info</b></div>
+                                        <hr>
+                                        <label>Shop Name: <b><?php echo $result['BarbershopName'] ?></b></label>
+                                        <br/>
+                                        <label>Shop Username: <b><?php echo $result['Username'] ?></b></label>
+                                        <br/>
+                                        <label>Shop Address: <b><?php echo $result['Address'] ?></b></label>
+                                        <br/>
+                                        <label>Shop Zip: <b><?php echo $result['Zip'] ?></b></label>
+                                        <br/>
+                                        <label>Shop Number: <b><?php echo $result['PhoneNumber'] ?></b></label>
+                                        <br/>
+                                        <div>Profile Picture:  <img style="width:175px;" src="./uploads/barbershops/barbershopID<?php $result['BarbershopID'] ?>/profilepic.jpg"/></div>
+                                        <br/>
+                                        <div style="font-size:22px;"><b>Change info</b></div>
+                                        <hr/>
+                                        <?php
+                                        include_once'form-barbershop.php';
+                                        ?>
+
+                                    </div>
+                                </div>
+                                <?php
+                                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                                    $result = insShop();
+                                    if ($result === true){
+                                        
+                                    }else {
+                                        
+                                    }
+                                }
                             } else {
                                 echo "You need to sign in.";
                             }
-                        } elseif($_SESSION['accType'] === 'barber'){
+                        } elseif ($_SESSION['accType'] === 'barber') {
                             
-                        } elseif($_SESSION['accType'] === 'customer'){
+                        } elseif ($_SESSION['accType'] === 'customer') {
                             
-                        } else{
+                        } else {
                             echo "You are not signed in. Please sign in.";
                         }
                     }

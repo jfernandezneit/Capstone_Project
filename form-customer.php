@@ -50,10 +50,16 @@
                         <input id="custPic" name="custPic" type="file">
                         <br/>
                         <br/>     
-                        <input type="submit" value="Create Account">
-                        <input type="hidden" value="customer" name="form-action">
+                        <?php if (basename($_SERVER['PHP_SELF']) === 'settings.php') {
+                            ?>
+                            <input type="submit" value="Save Changes" name="submit">
+                        <?php } else {
+                            ?>
+                            <input type="submit" value="Create Account" name="submit">
+                            <?php
+                        }
+                        ?>
                     </form>
-                    <?php include_once 'signup-sc.php'; ?>
                 </div>
 
             </div><!-- End of content div -->

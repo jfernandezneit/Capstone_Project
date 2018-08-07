@@ -160,6 +160,7 @@ function getBarberInfo() {
 }
 
 function insShop() {
+    $bool = false;
     $db = getDatabase();
     $shopName = filter_input(INPUT_POST, 'shopName');
     $shopUsername = filter_input(INPUT_POST, 'shopUsername');
@@ -169,7 +170,7 @@ function insShop() {
     $shopZip = filter_input(INPUT_POST, 'shopZip');
     $shopPhone = filter_input(INPUT_POST, 'shopPhone');
 
-    $stmt = $db->prepare("INSERT INTO barbershops SET BarbershopName = :shopName , Username = :shopUsername, Password = :shopPass, Address = :shopAddress, Zip = :shopZip, PhoneNumber = :shopPhone");
+    $stmt = $db->prepare("UPDATE barbershops SET BarbershopName = :shopName , Username = :shopUsername, Password = :shopPass, Address = :shopAddress, Zip = :shopZip, PhoneNumber = :shopPhone WHERE BarbershopID = '{$_SESSION['user-id']}'");
 
     $binds = array(
         ":shopName" => $shopName,
@@ -180,9 +181,11 @@ function insShop() {
         ":shopPhone" => $shopPhone,
     );
     if ($stmt->execute($binds) && $stmt->rowCount() > 0) {
+        $bool = true;
          $stmt1 = $db->prepare("SELECT BarbershopID FROM barbershops WHERE Username = '$shopUsername' AND BarbershopName = '$shopName'");
 
                 if ($stmt1->execute() > 0 && $stmt1->rowCount() > 0) {
+                    $bool = true;
                     $results = $stmt1->fetch(PDO::FETCH_ASSOC);
                     $tmp_name = $_FILES['shopPic']['tmp_name'];
                     $currentDir = getcwd();
@@ -190,8 +193,23 @@ function insShop() {
                     $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbershops' . DIRECTORY_SEPARATOR . 'barbershopID' . $results['BarbershopID'];
                     $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
                     $result = move_uploaded_file($tmp_name, $new_name);
+                    if($result !== false){
+                        $bool = true;
+                        echo "<div style='width:200px; margin:auto;'>Sucessfully updated your information.</div>";
+                    } else {
+                        $bool = false;
+                        echo "<div style='width:150px; margin:auto;'>Picture failed to upload.</div> ";
+                    }
                     //header("Location: index.php");
+                } else {
+                    $bool = false;
+                    echo "<div style='width: 200px; margin: auto;'>Username or Barbershop name are incorrect.</div>";
                 }
+    } else {
+        $bool = false;
+        echo "<div style='width:200px; margin:auto;'>Failed to update your information.</div>";
     }
+    
+    return $bool;
 }
     
