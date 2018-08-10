@@ -182,34 +182,36 @@ function insShop() {
     );
     if ($stmt->execute($binds) && $stmt->rowCount() > 0) {
         $bool = true;
-         $stmt1 = $db->prepare("SELECT BarbershopID FROM barbershops WHERE Username = '$shopUsername' AND BarbershopName = '$shopName'");
+        $stmt1 = $db->prepare("SELECT BarbershopID FROM barbershops WHERE Username = '$shopUsername' AND BarbershopName = '$shopName'");
 
-                if ($stmt1->execute() > 0 && $stmt1->rowCount() > 0) {
-                    $bool = true;
-                    $results = $stmt1->fetch(PDO::FETCH_ASSOC);
-                    $tmp_name = $_FILES['shopPic']['tmp_name'];
-                    $currentDir = getcwd();
-                    $checkdir = mkdir("$currentDir/uploads/barbershops/barbershopID{$results['BarbershopID']}", 0777, true);
-                    $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbershops' . DIRECTORY_SEPARATOR . 'barbershopID' . $results['BarbershopID'];
-                    $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
-                    $result = move_uploaded_file($tmp_name, $new_name);
-                    if($result !== false){
-                        $bool = true;
-                        echo "<div style='width:200px; margin:auto;'>Sucessfully updated your information.</div>";
-                    } else {
-                        $bool = false;
-                        echo "<div style='width:150px; margin:auto;'>Picture failed to upload.</div> ";
-                    }
-                    //header("Location: index.php");
-                } else {
-                    $bool = false;
-                    echo "<div style='width: 200px; margin: auto;'>Username or Barbershop name are incorrect.</div>";
-                }
+        if ($stmt1->execute() > 0 && $stmt1->rowCount() > 0) {
+            $bool = true;
+            $results = $stmt1->fetch(PDO::FETCH_ASSOC);
+            $tmp_name = $_FILES['shopPic']['tmp_name'];
+            $currentDir = getcwd();
+            if (!isset($_SESSION['user-id'])) {
+                $checkdir = mkdir("$currentDir/uploads/barbershops/barbershopID{$results['BarbershopID']}", 0777, true);
+            }
+            $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbershops' . DIRECTORY_SEPARATOR . 'barbershopID' . $results['BarbershopID'];
+            $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
+            $result = move_uploaded_file($tmp_name, $new_name);
+            if ($result !== false) {
+                $bool = true;
+                echo "<div style='width:200px; margin:auto;'>Sucessfully updated your information.</div>";
+            } else {
+                $bool = false;
+                echo "<div style='width:150px; margin:auto;'>Picture failed to upload.</div> ";
+            }
+
+            //header("Location: index.php");
+        } else {
+            $bool = false;
+            echo "<div style='width: 200px; margin: auto;'>Username or Barbershop name are incorrect.</div>";
+        }
     } else {
         $bool = false;
         echo "<div style='width:200px; margin:auto;'>Failed to update your information.</div>";
     }
-    
+
     return $bool;
 }
-    

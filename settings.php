@@ -76,9 +76,9 @@ and open the template in the editor.
                                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     $result = insShop();
                                     if ($result === true){
-                                        
+                                        echo 'success';
                                     }else {
-                                        
+                                        echo 'failed';
                                     }
                                 }
                             } else {
