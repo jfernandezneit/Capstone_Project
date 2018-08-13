@@ -62,7 +62,7 @@ and open the template in the editor.
                                         <br/>
                                         <label>Shop Number: <b><?php echo $result['PhoneNumber'] ?></b></label>
                                         <br/>
-                                        <div>Profile Picture:  <img style="width:175px;" src="./uploads/barbershops/barbershopID<?php $result['BarbershopID'] ?>/profilepic.jpg"/></div>
+                                        <div>Profile Picture:  <img style="width:150px;" src="./uploads/barbershops/barbershopID<?php echo $result['BarbershopID'] ?>/profilepic.jpg"/></div>
                                         <br/>
                                         <div style="font-size:22px;"><b>Change info</b></div>
                                         <hr/>
