@@ -41,9 +41,10 @@ and open the template in the editor.
                 <?php
                 if (isset($_SESSION['authentication'])) {
                     if ($_SESSION['authentication'] === true) {
+                        include_once 'functions.php';
+                        include_once 'dbconnect.php';
                         if ($_SESSION['accType'] === 'barbershop') {
-                            include_once 'functions.php';
-                            include_once 'dbconnect.php';
+
                             $result = getShopInfo();
                             if ($result !== false) {
                                 ?>
@@ -75,9 +76,9 @@ and open the template in the editor.
                                 <?php
                                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     $result = insShop();
-                                    if ($result === true){
+                                    if ($result === true) {
                                         echo 'success';
-                                    }else {
+                                    } else {
                                         echo 'failed';
                                     }
                                 }
@@ -85,7 +86,30 @@ and open the template in the editor.
                                 echo "You need to sign in.";
                             }
                         } elseif ($_SESSION['accType'] === 'barber') {
-                            
+                            $result = getBarberInfo();
+                            if($result !== false){
+                                ?>
+                                <div style="width:75%; margin:auto;">
+                                    <div>
+
+                                        <div style="font-size:22px;"><b>Current info</b></div>
+                                        <hr>
+                                        <label>Shop Name: <b><?php echo $result['BarberName'] ?></b></label>
+                                        <br/>
+                                        <label>Shop Username: <b><?php echo $result['Username'] ?></b></label>
+                                        <br/>
+                                        <div>Profile Picture:  <img style="width:150px;" src="./uploads/barbershops/barbershopID<?php echo $result['BarbershopID'] ?>/profilepic.jpg"/></div>
+                                        <br/>
+                                        <div style="font-size:22px;"><b>Change info</b></div>
+                                        <hr/>
+                                        <?php
+                                        include_once'form-barbershop.php';
+                                        ?>
+
+                                    </div>
+                                </div>
+                <?php
+                            }
                         } elseif ($_SESSION['accType'] === 'customer') {
                             
                         } else {

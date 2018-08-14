@@ -150,7 +150,7 @@ function getBarberInfo() {
     $db = getDatabase();
     $barberID = filter_input(INPUT_GET, 'barber-id');
     $stmt = $db->prepare("SELECT * FROM barbers WHERE BarberID = $barberID");
-    $result = "Not a valid barber. (002)";
+    $result = false;
     if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;
