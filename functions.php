@@ -148,8 +148,12 @@ function getShopInfo() {
 
 function getBarberInfo() {
     $db = getDatabase();
-    $barberID = filter_input(INPUT_GET, 'barber-id');
-    $stmt = $db->prepare("SELECT * FROM barbers WHERE BarberID = $barberID");
+    if ($_SESSION['accType'] !== 'barber') {
+        $barberID = filter_input(INPUT_GET, 'barber-id');
+        $stmt = $db->prepare("SELECT * FROM barbers WHERE BarberID = $barberID");
+    } else {
+        $stmt = $db->prepare("SELECT * FROM barbers WHERE BarberID = {$_SESSION['user-id']}");
+    }
     $result = false;
     if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -159,7 +163,24 @@ function getBarberInfo() {
     }
 }
 
-function insShop() {
+function getCustInfo() {
+    $db = getDatabase();
+    if ($_SESSION['accType'] !== 'customer') {
+        $customerID = filter_input(INPUT_GET, 'customer-id');
+        $stmt = $db->prepare("SELECT * FROM barbcust WHERE CustomerID = $customerID");
+    } else {
+        $stmt = $db->prepare("SELECT * FROM barbcust WHERE CustomerID = {$_SESSION['user-id']}");
+    }
+    $result = false;
+    if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    } else {
+        return $result;
+    }
+}
+
+function updShop() {
     $bool = false;
     $db = getDatabase();
     $shopName = filter_input(INPUT_POST, 'shopName');
@@ -167,25 +188,14 @@ function insShop() {
     $shopAddress = filter_input(INPUT_POST, 'shopAddress');
     $shopZip = filter_input(INPUT_POST, 'shopZip');
     $shopPhone = filter_input(INPUT_POST, 'shopPhone');
+    $stmt = $db->prepare("UPDATE barbershops SET BarbershopName = '$shopName' , Username = '$shopUsername', Address = '$shopAddress', Zip = '$shopZip', PhoneNumber = '$shopPhone' WHERE BarbershopID = '{$_SESSION['user-id']}'");
 
-    $stmt = $db->prepare("UPDATE barbershops SET BarbershopName = :shopName , Username = :shopUsername, Address = :shopAddress, Zip = :shopZip, PhoneNumber = :shopPhone WHERE BarbershopID = '{$_SESSION['user-id']}'");
-
-    $binds = array(
-        ":shopName" => $shopName,
-        ":shopUsername" => $shopUsername,
-        ":shopAddress" => $shopAddress,
-        ":shopZip" => $shopZip,
-        ":shopPhone" => $shopPhone,
-    );
-    if ($stmt->execute($binds) && $stmt->rowCount() > 0) {
+    if ($stmt->execute() && $stmt->rowCount() > 0) {
         $bool = true;
         $tmp_name = $_FILES['shopPic']['tmp_name'];
         $currentDir = getcwd();
         $filepath = "$currentDir/uploads/barbershops/barbershopID{$_SESSION['user-id']}";
-        $check = file_exists($filepath);
-        if ($check === false) {
-            mkdir("$currentDir/uploads/barbershops/barbershopID{$_SESSION['user-id']}", 0777, true);
-        }
+        mkdir("$currentDir/uploads/barbershops/barbershopID{$_SESSION['user-id']}", 0777, true);
         $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbershops' . DIRECTORY_SEPARATOR . 'barbershopID' . $_SESSION['user-id'];
         $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
         $result = move_uploaded_file($tmp_name, $new_name);
@@ -202,4 +212,200 @@ function insShop() {
     }
 
     return $bool;
+}
+
+function updBarb() {
+    $bool = false;
+    $db = getDatabase();
+    $barbName = filter_input(INPUT_POST, 'barbName');
+    $barbUsername = filter_input(INPUT_POST, 'barbUsername');
+    $stmt = $db->prepare("UPDATE barbers SET BarberName = '$barbName', Username = '$barbUsername' WHERE BarberID = '{$_SESSION['user-id']}'");
+
+    if ($stmt->execute() && $stmt->rowCount() > 0) {
+        $tmp_name = $_FILES['barberPic']['tmp_name'];
+        $currentDir = getcwd();
+        mkdir("$currentDir/uploads/barbers/barberID{$_SESSION['user-id']}", 0777, true);
+        $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbers' . DIRECTORY_SEPARATOR . 'barberID' . $_SESSION['user-id'];
+        $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
+        $result = move_uploaded_file($tmp_name, $new_name);
+        if ($result === false) {
+            return $bool;
+        }
+        $bool = true;
+        return $bool;
+    } else {
+        return $bool;
+    }
+}
+
+function updCust() {
+    $db = getDatabase();
+    $custUsername = filter_input(INPUT_POST, 'custUsername');
+    $custPhone = filter_input(INPUT_POST, 'custPhone');
+    $stmt = $db->prepare("UPDATE barbercust SET Username = '$custUsername', PhoneNumb = '$custPhone' WHERE CustomerID = {$_SESSION['user-id']}");
+
+    if ($stmt->execute() && $stmt->rowCount() > 0) {
+        $results = $stmt2->fetch(PDO::FETCH_ASSOC);
+        $tmp_name = $_FILES['custPic']['tmp_name'];
+        $currentDir = getcwd();
+        $checkdir = mkdir("$currentDir/uploads/customers/customerID{$results['CustomerID']}", 0777, true);
+        $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'customers' . DIRECTORY_SEPARATOR . 'customerID' . $results['CustomerID'];
+        $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
+        $result = move_uploaded_file($tmp_name, $new_name);
+        if ($result === false) {
+            return $bool;
+        }
+        $bool = true;
+        return $bool;
+    } else {
+        return $bool;
+    }
+}
+
+function updPass() {
+    $db = getDatabase();
+    $bool = false;
+    if ($_SESSION['accType'] === 'barbershops') {
+        $password = filter_input(INPUT_POST, 'newPass');
+        $stmt = $db->prepare("UPDATE barbershops SET Password = '$password' WHERE BarbershopID = {$_SESSION['user-id']}");
+        if ($stmt->execute() > 0) {
+            $bool = true;
+            return $bool;
+        } else {
+            return $bool;
+        }
+    } elseif ($_SESSION['accType'] === 'barber') {
+        $password = filter_input(INPUT_POST, 'newPass');
+        $stmt = $db->prepare("UPDATE barbers SET Password = '$password' WHERE BarberID = {$_SESSION['user-id']}");
+        if ($stmt->execute() > 0) {
+            $bool = true;
+            return $bool;
+        } else {
+            return $bool;
+        }
+    } elseif ($_SESSION['accType'] === 'customer') {
+        $password = filter_input(INPUT_POST, 'newPass');
+        $stmt = $db->prepare("UPDATE barbcust SET Password = '$password' WHERE CustomerID = {$_SESSION['user-id']}");
+        if ($stmt->execute() > 0) {
+            $bool = true;
+            return $bool;
+        } else {
+            return $bool;
+        }
+    } else {
+        echo 'Please sign in.';
+    }
+}
+
+function insShop() {
+    $bool = false;
+    $db = getDatabase();
+    $shopName = filter_input(INPUT_POST, 'shopName');
+    $shopUsername = filter_input(INPUT_POST, 'shopUsername');
+    $shopTemp = filter_input(INPUT_POST, 'shopPass');
+    $shopPass = sha1($shopTemp);
+    $shopAddress = filter_input(INPUT_POST, 'shopAddress');
+    $shopZip = filter_input(INPUT_POST, 'shopZip');
+    $shopPhone = filter_input(INPUT_POST, 'shopPhone');
+
+    $stmt = $db->prepare("INSERT INTO barbershops SET BarbershopName = '$shopName' , Username = '$shopUsername', Password = '$shopPass', Address = '$shopAddress', Zip = '$shopZip', PhoneNumber = '$shopPhone'");
+
+    if ($stmt->execute() && $stmt->rowCount() > 0) {
+        $stmt1 = $db->prepare("SELECT BarbershopID FROM barbershops WHERE Username = '$shopUsername' AND BarbershopName = '$shopName'");
+
+        if ($stmt1->execute() > 0 && $stmt1->rowCount() > 0) {
+            $results = $stmt1->fetch(PDO::FETCH_ASSOC);
+            $tmp_name = $_FILES['shopPic']['tmp_name'];
+            $currentDir = getcwd();
+            $checkdir = mkdir("$currentDir/uploads/barbershops/barbershopID{$results['BarbershopID']}", 0777, true);
+            if ($checkdir === false) {
+                return $bool;
+            }
+            $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbershops' . DIRECTORY_SEPARATOR . 'barbershopID' . $results['BarbershopID'];
+            $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
+            $result = move_uploaded_file($tmp_name, $new_name);
+            if ($result === false) {
+                return $bool;
+            } else {
+                $bool = true;
+                return $bool;
+            }
+        }
+    } else {
+        return $bool;
+    }
+}
+
+function insBarb() {
+    $db = getDatabase();
+    $bool = false;
+    $barbName = filter_input(INPUT_POST, 'barbName');
+    $barbAffiliation = filter_input(INPUT_POST, 'barbAffiliation');
+    $barbUsername = filter_input(INPUT_POST, 'barbUsername');
+    $barbTemp = filter_input(INPUT_POST, 'barbPass');
+    $barbPass = sha1($barbTemp);
+    $stmt1 = $db->prepare("SELECT BarbershopID FROM barbershops WHERE BarbershopName = '$barbAffiliation'");
+
+    if ($stmt1->execute() && $stmt1->rowCount() > 0) {
+        $result = $stmt1->fetch(PDO::FETCH_ASSOC);
+        $barbershopID = $result['BarbershopID'];
+        $stmt2 = $db->prepare("INSERT INTO barbers SET BarbershopID = $barbershopID, BarberName = '$barbName', Username = '$barbUsername', Password = '$barbPass'");
+
+        if ($stmt2->execute() && $stmt2->rowCount() > 0) {
+            $stmt3 = $db->prepare("SELECT BarberID FROM barbers WHERE Username = '$barbUsername' AND BarbershopID = '$barbershopID'");
+
+            if ($stmt3->execute() > 0 && $stmt3->rowCount() > 0) {
+                $results = $stmt3->fetch(PDO::FETCH_ASSOC);
+                $tmp_name = $_FILES['barberPic']['tmp_name'];
+                $currentDir = getcwd();
+                $checkdir = mkdir("$currentDir/uploads/barbers/barberID{$results['BarberID']}", 0777, true);
+                if ($checkdir === false) {
+                    return $bool;
+                }
+                $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbers' . DIRECTORY_SEPARATOR . 'barberID' . $results['BarberID'];
+                $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
+                $result = move_uploaded_file($tmp_name, $new_name);
+                if ($result === false) {
+                    $bool = false;
+                    return $bool;
+                } else {
+                    $bool = true;
+                    return $bool;
+                }
+            }
+        } else {
+            return $bool;
+        }
+    } else {
+        return $bool;
+    }
+}
+
+function insCust() {
+    $db = getDatabase();
+    $custUsername = filter_input(INPUT_POST, 'custUsername');
+    $custTemp = filter_input(INPUT_POST, 'custPass');
+    $custPass = sha1($custTemp);
+    $custPhone = filter_input(INPUT_POST, 'custPhone');
+    $stmt = $db->prepare("INSERT INTO barbercust SET Username = '$custUsername', Password = '$custPass', PhoneNumb = '$custPhone'");
+
+    if ($stmt->execute() && $stmt->rowCount() > 0) {
+        $stmt2 = $db->prepare("SELECT CustomerID FROM barbercust WHERE Username = '$custUsername' AND PhoneNumb = '$custPhone'");
+
+        if ($stmt2->execute() > 0 && $stmt2->rowCount() > 0) {
+            $results = $stmt2->fetch(PDO::FETCH_ASSOC);
+            $tmp_name = $_FILES['custPic']['tmp_name'];
+            $currentDir = getcwd();
+            $checkdir = mkdir("$currentDir/uploads/customers/customerID{$results['CustomerID']}", 0777, true);
+            if ($checkdir === false) {
+                return $bool;
+            } else {
+                $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'customers' . DIRECTORY_SEPARATOR . 'customerID' . $results['CustomerID'];
+                $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
+                $result = move_uploaded_file($tmp_name, $new_name);
+            }
+        }
+    } else {
+        echo 'failed to create account';
+    }
 }

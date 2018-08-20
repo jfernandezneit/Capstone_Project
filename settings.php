@@ -75,7 +75,7 @@ and open the template in the editor.
                                 </div>
                                 <?php
                                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                                    $result = insShop();
+                                    $result = updShop();
                                     if ($result === true) {
                                         echo 'success';
                                     } else {
@@ -87,42 +87,90 @@ and open the template in the editor.
                             }
                         } elseif ($_SESSION['accType'] === 'barber') {
                             $result = getBarberInfo();
-                            if($result !== false){
+                            if ($result !== false) {
                                 ?>
                                 <div style="width:75%; margin:auto;">
                                     <div>
 
                                         <div style="font-size:22px;"><b>Current info</b></div>
                                         <hr>
-                                        <label>Shop Name: <b><?php echo $result['BarberName'] ?></b></label>
+                                        <label>Barber Name: <b><?php echo $result['BarberName'] ?></b></label>
                                         <br/>
-                                        <label>Shop Username: <b><?php echo $result['Username'] ?></b></label>
+                                        <label>Barber Username: <b><?php echo $result['Username'] ?></b></label>
                                         <br/>
-                                        <div>Profile Picture:  <img style="width:150px;" src="./uploads/barbershops/barbershopID<?php echo $result['BarbershopID'] ?>/profilepic.jpg"/></div>
+                                        <div>Profile Picture:  <img style="width:150px;" src="./uploads/barbershops/barberID<?php echo $result['BarberID'] ?>/profilepic.jpg"/></div>
                                         <br/>
                                         <div style="font-size:22px;"><b>Change info</b></div>
                                         <hr/>
                                         <?php
-                                        include_once'form-barbershop.php';
+                                        include_once 'form-barber.php';
+                                        ?>
+                                        <hr/>
+                                        <br/>
+                                        <?php
+                                        include_once 'form-pass.php';
+                                        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                                            $result = updBarb();
+                                            if ($result === true) {
+                                                echo 'success';
+                                            } else {
+                                                echo 'failed';
+                                            }
+                                        }
                                         ?>
 
                                     </div>
                                 </div>
-                <?php
+                                <?php
+                            } else {
+                                echo "Please make sure you are signed in.";
                             }
                         } elseif ($_SESSION['accType'] === 'customer') {
-                            
-                        } else {
-                            echo "You are not signed in. Please sign in.";
-                        }
-                    }
-                } //End of the isset for authentication
-                ?>
-            </div><!-- End of content div -->
+                            $result = getCustInfo();
+                            if ($result !== false) {
+                                ?>
+                                <div style="width:75%; margin:auto;">
+                                    <div>
 
-        </div> <!--End of wrapper div -->
+                                        <div style="font-size:22px;"><b>Current info</b></div>
+                                        <hr>
+                                        <label>Customer Username: <b><?php echo $result['Username'] ?></b></label>
+                                        <br/>
+                                        <label>Customer Phone: <b><?php echo $result['PhoneNumber'] ?></b></label>
+                                        <br/>
+                                        <div>Profile Picture:  <img style="width:150px;" src="./uploads/customers/customerID<?php echo $result['CustomerID'] ?>/profilepic.jpg"/></div>
+                                        <br/>
+                                        <div style="font-size:22px;"><b>Change info</b></div>
+                                        <hr/>
+                                        <?php
+                                        include_once 'form-customer.php';
+                                        ?>
+                                        <hr/>
+                                        <br/>
+                                        <?php
+                                        include_once 'form-pass.php';
+                                        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                                            $result = updCust();
+                                            if ($result === true) {
+                                                echo 'success';
+                                            } else {
+                                                echo 'failed';
+                                            }
+                                        }
+                                    } else {
+                                        echo 'Please sign in.';
+                                    }
+                                } else {
+                                    echo "Please make sure you are signed in.";
+                                }
+                            }
+                        } //End of the isset for authentication
+                        ?>
+                    </div><!-- End of content div -->
 
-    </body>
-</html>
+                </div> <!--End of wrapper div -->
+
+                </body>
+                </html>
 
 

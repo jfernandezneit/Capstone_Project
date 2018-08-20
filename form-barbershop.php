@@ -52,6 +52,8 @@
                         <br/>
                         <label for="shopUsername">Email (will be your username): </label>
                         <input id="shopUsername" type="email" name="shopUsername">
+                        <br/>
+                        <br/>
                         <label for="shopPass">Password: </label>
                         <input id="shopPass" type="password" name="shopPass">
                         <br/>
