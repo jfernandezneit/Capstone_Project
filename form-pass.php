@@ -35,9 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($newPass === $newPass1) {
                 $result = updPass();
                 if ($result === true) {
-                    echo 'success';
+                    echo 'succesfully changed your password.';
                 } else {
-                    echo 'failed';
+                    echo 'failed to change your password.';
                 }
             } else {
                 echo 'New passwords did not match. Please re-enter new password.';

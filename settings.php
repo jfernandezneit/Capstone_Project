@@ -70,6 +70,11 @@ and open the template in the editor.
                                         <?php
                                         include_once'form-barbershop.php';
                                         ?>
+                                        <hr/>
+                                        <br/>
+                                        <?php
+                                        include_once 'form-pass.php';
+                                ?>
 
                                     </div>
                                 </div>
