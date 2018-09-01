@@ -301,17 +301,17 @@ function insShop() {
     $bool = false;
     $db = getDatabase();
     $shopName = filter_input(INPUT_POST, 'shopName');
-    $shopUsername = filter_input(INPUT_POST, 'shopUsername');
+    $shopEmail = filter_input(INPUT_POST, 'shopEmail');
     $shopTemp = filter_input(INPUT_POST, 'shopPass');
     $shopPass = sha1($shopTemp);
     $shopAddress = filter_input(INPUT_POST, 'shopAddress');
     $shopZip = filter_input(INPUT_POST, 'shopZip');
     $shopPhone = filter_input(INPUT_POST, 'shopPhone');
 
-    $stmt = $db->prepare("INSERT INTO barbershops SET BarbershopName = '$shopName' , Username = '$shopUsername', Password = '$shopPass', Address = '$shopAddress', Zip = '$shopZip', PhoneNumber = '$shopPhone'");
+    $stmt = $db->prepare("INSERT INTO barbershops SET Name = '$shopName' , Email = '$shopEmail', Password = '$shopPass', Address = '$shopAddress', Zip = '$shopZip', PhoneNumber = '$shopPhone'");
 
     if ($stmt->execute() && $stmt->rowCount() > 0) {
-        $stmt1 = $db->prepare("SELECT BarbershopID FROM barbershops WHERE Username = '$shopUsername' AND BarbershopName = '$shopName'");
+        $stmt1 = $db->prepare("SELECT BarbershopID FROM barbershops WHERE Email = '$shopEmail' AND Name = '$shopName'");
 
         if ($stmt1->execute() > 0 && $stmt1->rowCount() > 0) {
             $results = $stmt1->fetch(PDO::FETCH_ASSOC);
@@ -408,4 +408,33 @@ function insCust() {
     } else {
         echo 'failed to create account';
     }
+}
+
+function allShops(){
+    $db = getDatabase();
+    $stmt = $db->prepare("SELECT * FROM barbershops");
+    $results = array();
+    if($stmt->execute() > 0 && $stmt->rowCount() > 0 ){
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
+    } else {
+        return false;
+    }
+}
+
+function checkShops($value1){
+    $db = getDatabase();
+    $results = allShops();
+    $bool = false;
+    foreach($results as $x):
+        if ($x['Name'] === $value1){
+            $bool = true;
+            break 2;
+
+        } else {
+            $bool = false;
+        }
+    endforeach;
+    return $bool;
+    
 }

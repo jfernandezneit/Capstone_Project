@@ -34,13 +34,13 @@
             <div id="content" style="background-color: white; min-height: 300px;">
                 <div style="width:100%; height: 150px; background-color:rgba(0,0,0,.6); position: relative; top: 50px; border-bottom: 1.5px solid #ff442a">
                     <h3 style="margin: 0px 0px 15px 0px; position:relative; left:460px;">Type of account</h3>
-                    <a href="signup-sc.php?form-action='barbershop'" style="text-decoration: none; color:lightgrey; position:relative; left:480px;">Barbershop</a>
+                    <a href="signup-sc.php?form-action=barbershop" style="text-decoration: none; color:lightgrey; position:relative; left:480px;">Barbershop</a>
                     <br/>
                     <br/>
-                    <a href="signup-sc.php?form-action='barber'" style="text-decoration: none; color:lightgrey; position:relative; left:480px;">Barber</a>
+                    <a href="signup-sc.php?form-action=barber" style="text-decoration: none; color:lightgrey; position:relative; left:480px;">Barber</a>
                     <br/>
                     <br/>
-                    <a href="signup-sc.php?form-action='customer'" style="text-decoration: none; color:lightgrey; position:relative; left:480px;">User</a>
+                    <a href="signup-sc.php?form-action=customer" style="text-decoration: none; color:lightgrey; position:relative; left:480px;">User</a>
                 </div>
 
             </div><!-- End of content div -->

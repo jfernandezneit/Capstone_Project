@@ -20,61 +20,62 @@
             <div style="width:100%; height: px; background-color:rgba(0,0,0,.6); position: relative; top: 50px; border-bottom: 1.5px solid #ff442a">
                 <form method="POST" action="#" enctype="multipart/form-data">
                     <?php if (basename($_SERVER['PHP_SELF']) === 'settings.php') { ?>
-                        <label for="shopName">Barbershop Name: </label>
-                        <input id="shopName" type="text" name="shopName" value="<?php echo $result['BarbershopName']; ?>">
+                        <label for="shopName" style="margin-left:5px;">Shop Name: </label>
+                        <input id="shopName" type="text" name="shopName" style="margin-top:2.5px;" value="<?php echo $result['BarbershopName']; ?>">
                         <br/>
                         <br/>
-                        <label for="shopUsername">Email (will be your username): </label>
+                        <label for="shopUsername" style="margin-left:5px;">Email: </label>
                         <input id="shopUsername" type="email" name="shopUsername" value="<?php echo $result['Username']; ?>">
                         <br/>
                         <br/>
-                        <label for="shopAddress">Address</label>
+                        <label for="shopAddress" style="margin-left:5px;">Address: </label>
                         <input id="shopAddress" type="text" name="shopAddress" value="<?php echo $result['Address']; ?>">
                         <br/>
                         <br/>
-                        <label for="shopZip">Zip Code:  </label>
+                        <label for="shopZip" style="margin-left:5px;">Zip Code: </label>
                         <input id="shopZip" type="text" name="shopZip" value="<?php echo $result['Zip']; ?>">
                         <br/>
                         <br/>
-                        <label for="shopPhone">Phone: </label>
+                        <label for="shopPhone" style="margin-left:5px;">Phone: </label>
                         <input id="shopPhone" type="text" name="shopPhone" value="<?php echo $result['PhoneNumber']; ?>">
                         <br/>
                         <br/>
-                        <label for="shopPic">Upload Image:</label>
+                        <label for="shopPic" style="margin-left:5px;">Upload Image:</label>
                         <input id="shopPic" name="shopPic" type="file">
                         <br/>
                         <br/>
-                        <input type="submit" value="Save Changes" name="submit">
+                        <input type="submit" value="Save Changes" name="submit" style="margin-left:5px;">
                     <?php } else { ?>
-                        <label for="shopName">Barbershop Name: </label>
-                        <input id="shopName" type="text" name="shopName">
+
+                        <label for="shopName" style="margin-left:5px;">Shop Name: </label>
+                        <input id="shopName" type="text" name="shopName" style="margin-top:2.5px;">
                         <br/>
                         <br/>
-                        <label for="shopUsername">Email (will be your username): </label>
-                        <input id="shopUsername" type="email" name="shopUsername">
+                        <label for="shopEmail" style="margin-left:5px;">Email: </label>
+                        <input id="shopEmail" type="email" name="shopEmail" style="margin-left:36px;">
                         <br/>
                         <br/>
-                        <label for="shopPass">Password: </label>
-                        <input id="shopPass" type="password" name="shopPass">
+                        <label for="shopPass" style="margin-left:5px;">Password: </label>
+                        <input id="shopPass" type="password" name="shopPass" style="margin-left:12px;">
                         <br/>
                         <br/>
-                        <label for="shopAddress">Address</label>
-                        <input id="shopAddress" type="text" name="shopAddress">
+                        <label for="shopAddress" style="margin-left:5px;">Address: </label>
+                        <input id="shopAddress" type="text" name="shopAddress" style="margin-left:19px;">
                         <br/>
                         <br/>
-                        <label for="shopZip">Zip Code:  </label>
-                        <input id="shopZip" type="text" name="shopZip">
+                        <label for="shopZip" style="margin-left:5px;">Zip Code:  </label>
+                        <input id="shopZip" type="text" name="shopZip" style="margin-left:10px;">
                         <br/>
                         <br/>
-                        <label for="shopPhone">Phone: </label>
+                        <label for="shopPhone" style="margin-left:5px;">Phone: </label>
                         <input id="shopPhone" type="text" name="shopPhone">
                         <br/>
                         <br/>
-                        <label for="shopPic">Upload Image:</label>
+                        <label for="shopPic" style="margin-left:5px;">Upload Image:</label>
                         <input id="shopPic" name="shopPic" type="file">
                         <br/>
                         <br/>
-                        <input type="submit" value="Create Account" name="submit">
+                        <input type="submit" value="Create Account" name="submit" style="margin-left:5px; margin-bottom: 5px;">
                     <?php } ?>
 
                 </form>
