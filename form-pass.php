@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input id="newPass1" type="password" name="newPass1">
         <br/>
         <br/>
-        <input type="submit" name="submit" value="Save Changes"/>
+        <input type="submit" name="submit" value="Save Changes" style="margin-bottom: 5px;"/>
     </form>    
 </div>
 

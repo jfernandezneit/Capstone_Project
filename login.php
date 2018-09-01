@@ -4,7 +4,7 @@ session_start();
 include_once 'dbconnect.php';
 $db = getDatabase();
 
-$username = filter_input(INPUT_POST, 'loginUsername');
+$email = filter_input(INPUT_POST, 'loginUsername');
 $password = filter_input(INPUT_POST, 'loginPass');
 $account = filter_input(INPUT_POST, 'loginAcc');
 
@@ -12,9 +12,9 @@ if (isset($_POST['login'])) {
     if (!empty($_POST['loginUsername']) && !empty($_POST['loginPass'])) {
         $_SESSION['authentication'] = false;
         if ($account === 'barbershop') {
-            $stmt = $db->prepare("SELECT BarbershopID, Username, Password FROM barbershops WHERE Username = :userName AND Password = :userPassword");
+            $stmt = $db->prepare("SELECT BarbershopID, Email, Password FROM barbershops WHERE Email = :userEmail AND Password = :userPassword");
             $binds = array(
-                ":userName" => $username,
+                ":userEmail" => $email,
                 ":userPassword" => SHA1($password)
             );
 
@@ -28,9 +28,9 @@ if (isset($_POST['login'])) {
                 echo 'poop1';
             }
         } elseif ($account === 'barber') {
-            $stmt = $db->prepare("SELECT BarberID, Username, Password FROM barbers WHERE Username = :userName AND Password = :userPassword");
+            $stmt = $db->prepare("SELECT BarberID, Email, Password FROM barbers WHERE Email = :userEmail AND Password = :userPassword");
             $binds = array(
-                ":userName" => $username,
+                ":userEmail" => $email,
                 ":userPassword" => SHA1($password)
             );
 
@@ -44,9 +44,9 @@ if (isset($_POST['login'])) {
                 echo 'poop2';
             }
         } elseif ($account === 'customer') {
-            $stmt = $db->prepare("SELECT CustomerID ,Username, Password FROM barbercust WHERE Username = :userName AND Password = :userPassword");
+            $stmt = $db->prepare("SELECT CustomerID ,Email, Password FROM barbercust WHERE Email = :userEmail AND Password = :userPassword");
             $binds = array(
-                ":userName" => $username,
+                ":userEmail" => $email,
                 ":userPassword" => SHA1($password)
             );
 

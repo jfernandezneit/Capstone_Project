@@ -51,27 +51,30 @@ and open the template in the editor.
                             include_once'form-barbershop.php';
                             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $shopName = filter_input(INPUT_POST, 'shopName');
-                                $results = checkShops($shopName);
-                                if($results === false){
-                                    $result = insShop();                                
-                                if ($result === true) {
-                                    //header("Location: index.php");
+                                $shopEmail = filter_input(INPUT_POST, 'shopEmail');
+                                $results = checkShopRecs($shopName, $shopEmail);
+                                if ($results === false) {
+                                    $result = insShop();
+                                    if ($result === true) {
+                                        //header("Location: index.php");
+                                        echo 'successfully created the account.';
+                                    } else {
+                                        echo 'failed to create account';
+                                    }
                                 } else {
-                                    echo 'failed to create account';
-                                }
-                                } else{
                                     echo 'Please choose another name for shop.';
                                 }
-                                
                             }
                         } elseif ($action === 'barber') {
                             include_once'form-barber.php';
-                            $result = insBarb();
-                            if ($result === true) {
-                                header("Location: index.php");
-                            } else {
-                                echo 'failed to create account';
-                            }
+                            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                                $result = insBarb();
+                                if ($result === true) {
+                                    header("Location: index.php");
+                                } else {
+                                    echo 'failed to create account';
+                                }
+                            } 
                         } elseif ($action === 'customer') {
                             include_once'form-customer.php';
                             $result = insCust();

@@ -10,9 +10,12 @@
 
         if (basename($_SERVER['PHP_SELF']) === 'settings.php') {
             $result = getBarberInfo();
+            $barbAffiliation = getAffl($result['BarbershopID']);
             if ($result === false) {
                 echo "Please sign in.";
             }
+//            print_r($barbAffiliation);
+//            die('123456');
         }
         ?>
         <div id="content" style="background-color: white; min-height: 350px;">
@@ -20,20 +23,15 @@
                 <form method="POST" action="#" enctype="multipart/form-data">
                     <?php if (basename($_SERVER['PHP_SELF']) === 'settings.php') { ?>
                         <label for="barbName">Barbers Name: </label>
-                        <input id="barbName" type="text" name="barbName">
+                        <input id="barbName" type="text" name="barbName" value="<?php echo $result['Name']; ?>">
                         <br/>
                         <br/>
                         <label for="barbAffiliation">Barbershop working for: </label>
-                        <input id="barbAffiliation" type="text" name="barbAffiliation">
+                        <input id="barbAffiliation" type="text" name="barbAffiliation" value="<?php echo $barbAffiliation; ?>">
                         <br/>
                         <br/>
                         <label for="barbUsername">Email (will be your username): </label>
-                        <input id="barbUsername" type="email" name="barbUsername">
-                        <br/>
-                        <br/>
-
-                        <label for="barberPic">Upload Image:</label>
-                        <input id="barberPic" name="barberPic" type="file">
+                        <input id="barbUsername" type="email" name="barbUsername" value="<?php echo $result['Email']; ?>">
                         <br/>
                         <br/>
                         <?php

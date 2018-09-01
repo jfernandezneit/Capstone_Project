@@ -53,9 +53,9 @@ and open the template in the editor.
 
                                         <div style="font-size:22px;"><b>Current info</b></div>
                                         <hr>
-                                        <label>Shop Name: <b><?php echo $result['BarbershopName'] ?></b></label>
+                                        <label>Shop Name: <b><?php echo $result['Name'] ?></b></label>
                                         <br/>
-                                        <label>Shop Username: <b><?php echo $result['Username'] ?></b></label>
+                                        <label>Shop Username: <b><?php echo $result['Email'] ?></b></label>
                                         <br/>
                                         <label>Shop Address: <b><?php echo $result['Address'] ?></b></label>
                                         <br/>
@@ -74,18 +74,18 @@ and open the template in the editor.
                                         <br/>
                                         <?php
                                         include_once 'form-pass.php';
-                                ?>
+                                        ?>
 
                                     </div>
                                 </div>
                                 <?php
-                                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                                    $result = updShop();
-                                    if ($result === true) {
-                                        echo 'success';
-                                    } else {
-                                        echo 'failed';
-                                    }
+                            }
+                            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                                $result = updShop();
+                                if ($result === true) {
+                                    echo 'success';
+                                } else {
+                                    echo 'failed';
                                 }
                             } else {
                                 echo "You need to sign in.";
@@ -99,11 +99,11 @@ and open the template in the editor.
 
                                         <div style="font-size:22px;"><b>Current info</b></div>
                                         <hr>
-                                        <label>Barber Name: <b><?php echo $result['BarberName'] ?></b></label>
+                                        <label>Barber Name: <b><?php echo $result['Name'] ?></b></label>
                                         <br/>
-                                        <label>Barber Username: <b><?php echo $result['Username'] ?></b></label>
+                                        <label>Barber Username: <b><?php echo $result['Email'] ?></b></label>
                                         <br/>
-                                        <div>Profile Picture:  <img style="width:150px;" src="./uploads/barbershops/barberID<?php echo $result['BarberID'] ?>/profilepic.jpg"/></div>
+                                        <div>Profile Picture:  <img style="width:150px;" src="./uploads/barbers/barberID<?php echo $result['BarberID'] ?>/profilepic.jpg"/></div>
                                         <br/>
                                         <div style="font-size:22px;"><b>Change info</b></div>
                                         <hr/>

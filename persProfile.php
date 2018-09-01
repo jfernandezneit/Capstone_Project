@@ -46,11 +46,10 @@
                                 if ($stmt->execute() > 0 && $stmt->rowCount() > 0 && $stmt2->execute() > 0 && $stmt2->rowCount() > 0) {
                                     $result = $stmt->fetch(PDO::FETCH_ASSOC);
                                     $results = $stmt2->fetchAll(PDO:: FETCH_ASSOC);
-                                    $profileName = $result['BarbershopName'];
+                                    $profileName = $result['Name'];
                                     $profileAddress = $result['Address'];
                                     $profileZip = $result['Zip'];
                                     $profilePhone = $result['PhoneNumber'];
-                                    $profileRating = $result['Rating'];
                                     $barbList = array();
                                     echo "<div><img style='width:150px;' src='./uploads/barbershops/barbershopID{$_SESSION['user-id']}/profilepic.jpg'/></div>";
                                     ?>
@@ -72,14 +71,12 @@
                                 $stmt = $db->prepare("SELECT * FROM barbers WHERE BarberID = {$_SESSION['user-id']}");
                                 if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
                                     $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                                    $profileName = $result['BarberName'];
-                                    $profileRating = $result['Rating'];
+                                    $profileName = $result['Name'];
                                     echo "<div><img style='width:150px;' src='./uploads/barbers/barberID{$_SESSION['user-id']}/profilepic.jpg'/></div>";
                                     ?>
 
                                     <div style="width:30%; position:relative; left:5px;">Barber Name: <?php echo $profileName ?></div>
-                                    <div style="width:10%; position:relative; left:5px;">Rating: <?php echo $profileRating ?> / 5</div>
-                                    <div style="width:100px; font-size: 18px; position:relative; left:93.5%; bottom:180px;"><a href="settings.php" style="text-decoration: none; color:white;">Settings</a></div>
+                                    <div style="width:100px; font-size: 18px; margin-left: 5px; margin-top:10px;"><a href="settings.php" style="text-decoration: none; color:white;">Settings</a></div>
                                     <br/>
                                     <?php
                                     //Then I'm going to pull in the barbershop the barber is affilziated with
