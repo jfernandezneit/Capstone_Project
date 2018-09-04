@@ -104,13 +104,10 @@ and open the template in the editor.
                     if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
                         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         foreach ($result as $x):
-                            $temp = $x['ts'];
-                            $date = date("m-d-Y", $temp);
                             ?>
                             <div style="width:100%; position:relative; border-bottom: .5px solid #ff442a; background-color: rgba(0,0,0,.6);">
                                 <div style="width:100px; position:relative;">Reviewer: <?php echo $x['Reviewer'] ?></div>
-                                <div style="width:150px; position:relative;"><?php echo $date ?></div>
-                                <div style="width:100px; position:relative;">Rating: <?php echo $x['Rating'] ?> / 5</div>
+                                <div style="width:150px; position:relative;"><?php echo $x['ts'] ?></div>
                                 <div style="width:80%; position:relative; border: .5px solid grey; left:19.5%; bottom:50.5px; min-height: 100px; background-color: white;"><?php echo $x['Review'] ?></div>
                             </div>
                             <?php
@@ -127,7 +124,6 @@ and open the template in the editor.
                             <div style="width:100%; position:relative; border-bottom: .5px solid #ff442a; margin-bottom: 15px; background-color: rgba(0,0,0,.6);">
                                 <div style="width:100px; position:relative;">Reviewer: <?php echo $x['Reviewer'] ?></div>
                                 <div style="width:150px; position:relative;"><?php echo $x['ts'] ?></div>
-                                <div style="width:100px; position:relative;">Rating: <?php echo $x['Rating'] ?> / 5</div>
                                 <div style="width:80%; position:relative; border: .5px solid grey; left:19.5%; bottom:50.5px; min-height: 100px; background-color: white;"><?php echo $x['Review'] ?></div>
                             </div>
                             <?php

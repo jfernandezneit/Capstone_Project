@@ -223,9 +223,6 @@ function updBarb() {
 //        $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbers' . DIRECTORY_SEPARATOR . 'barberID' . $_SESSION['user-id'];
 //        $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
 //        $result = move_uploaded_file($tmp_name, $new_name);
-        if ($result === false) {
-            return $bool;
-        }
         $bool = true;
         return $bool;
     } else {
@@ -443,7 +440,7 @@ function getAffl($value1) {
 //        } else {
 //            return false;
 //        }
-    endforeach;
+//    endforeach;
 }
 
 function checkShopRecs($value1, $value2) {
