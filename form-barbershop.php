@@ -16,7 +16,7 @@
             }
         }
         ?>
-        <div id="content" style="background-color: white; min-height: 350px">
+        <div id="content" style="background-color: white; min-height: 350px;">
             <div style="width:100%; background-color:rgba(0,0,0,.6); position: relative; top: 50px; border-bottom: 1.5px solid #ff442a">
                 <form method="POST" action="#" enctype="multipart/form-data">
                     <?php if (basename($_SERVER['PHP_SELF']) === 'settings.php') { ?>
@@ -39,8 +39,12 @@
                         <label for="shopPhone" style="margin-left:5px;">Phone: </label>
                         <input id="shopPhone" type="text" name="shopPhone" value="<?php echo $result['PhoneNumber']; ?>">
                         <br/>
-                        <br/>                        
-                        <input type="submit" value="Save Changes" name="submit" style="margin-left:5px; margin-bottom: 5px;">
+                        <br/>
+                        <label for="shopPic" style="margin-left:5px;">Upload Image:</label>
+                        <input id="shopPic" name="shopPic" type="file">
+                        <br/>
+                        <br/>                       
+                        <input type="submit" value="Save Changes" name="UpdateBarbershop" style="margin-left:5px; margin-bottom: 5px;">
                     <?php } else { ?>
 
                         <label for="shopName" style="margin-left:5px;">Shop Name: </label>
@@ -71,7 +75,7 @@
                         <input id="shopPic" name="shopPic" type="file">
                         <br/>
                         <br/>
-                        <input type="submit" value="Create Account" name="submit" style="margin-left:5px; margin-bottom: 5px;">
+                        <input type="submit" value="Create Account" name="CreateBarbershop" style="margin-left:5px; margin-bottom: 5px;">
                     <?php } ?>
 
                 </form>

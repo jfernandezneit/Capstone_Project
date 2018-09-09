@@ -80,19 +80,31 @@ and open the template in the editor.
                                 </div>
                                 <?php
                             }
-                            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                                $result = updShop();
-                                if ($result === true) {
-                                    echo 'success';
+                            $update = filter_input(INPUT_POST, 'UpdateBarbershop');
+                            if (isset($update)) {
+                                $shopName = filter_input(INPUT_POST, 'shopName');
+                                $shopEmail = filter_input(INPUT_POST, 'shopEmail');
+                                $check1 = checkShopRecs($shopName, $shopEmail);
+                                if ($check1 === false) {
+                                    $result = updShop();
+                                    if ($result === true) {
+                                        echo 'success';
+                                    } else {
+                                        echo 'failed';
+                                    }
                                 } else {
-                                    echo 'failed';
+                                    echo 'Email or Shop name unavailable.';
                                 }
                             } else {
                                 echo "You need to sign in.";
                             }
                         } elseif ($_SESSION['accType'] === 'barber') {
+
                             $result = getBarberInfo();
+
                             if ($result !== false) {
+
+                                $barbAffiliation = getAffl($result['BarbershopID'])
                                 ?>
                                 <div style="width:75%; margin:auto;">
                                     <div>
@@ -102,6 +114,8 @@ and open the template in the editor.
                                         <label>Barber Name: <b><?php echo $result['Name'] ?></b></label>
                                         <br/>
                                         <label>Barber Username: <b><?php echo $result['Email'] ?></b></label>
+                                        <br/>
+                                        <label>Barber Affiliation: <b><?php echo $barbAffiliation ?></b></label>
                                         <br/>
                                         <div>Profile Picture:  <img style="width:150px;" src="./uploads/barbers/barberID<?php echo $result['BarberID'] ?>/profilepic.jpg"/></div>
                                         <br/>
@@ -114,12 +128,27 @@ and open the template in the editor.
                                         <br/>
                                         <?php
                                         include_once 'form-pass.php';
-                                        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                                            $result = updBarb();
-                                            if ($result === true) {
-                                                echo 'success';
+                                        $update = filter_input(INPUT_POST, 'UpdateBarber');
+                                
+                                        if (isset($update)) {
+                                            
+                                            $barbEmail = filter_input(INPUT_POST, 'barbEmail');
+                                            $barbAffiliation = filter_input(INPUT_POST, 'barbAffiliation');
+                                            $check1 = checkAffl($barbAffiliation);
+                                            if (!empty($check1)) {                                                
+                                                $check2 = checkBarberEmail($barbEmail);
+                                                if ($check2 === false) {
+                                                    $result = updBarb();
+                                                    if ($result === true) {
+                                                        echo 'success';
+                                                    } else {
+                                                        echo 'failed';
+                                                    }
+                                                } else {
+                                                    echo 'This email is already in use. Choose another.';
+                                                }
                                             } else {
-                                                echo 'failed';
+                                                echo 'Please enter a valid barbershop.';
                                             }
                                         }
                                         ?>
@@ -154,7 +183,8 @@ and open the template in the editor.
                                         <br/>
                                         <?php
                                         include_once 'form-pass.php';
-                                        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                                        $update = filter_input(INPUT_POST, 'UpdateCustomer');
+                                        if (isset($update)) {
                                             $result = updCust();
                                             if ($result === true) {
                                                 echo 'success';

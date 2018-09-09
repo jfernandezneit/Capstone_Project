@@ -44,7 +44,6 @@ and open the template in the editor.
                 $db = getDatabase();
                 $action = filter_input(INPUT_GET, 'form-action');
 
-
                 if (isset($action)) {
                     if (!empty($action)) {
                         if ($action === 'barbershop') {
@@ -52,29 +51,40 @@ and open the template in the editor.
                             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $shopName = filter_input(INPUT_POST, 'shopName');
                                 $shopEmail = filter_input(INPUT_POST, 'shopEmail');
-                                $results = checkShopRecs($shopName, $shopEmail);
-                                if ($results === false) {
+                                $check1 = checkShopRecs($shopName, $shopEmail);
+                                if ($check1 === false) {
                                     $result = insShop();
                                     if ($result === true) {
-                                        //header("Location: index.php");
-                                        echo 'successfully created the account.';
+                                        header("Location: index.php");
                                     } else {
                                         echo 'failed to create account';
                                     }
                                 } else {
-                                    echo 'Please choose another name for shop.';
+                                    echo 'Please choose another name or email for shop.';
                                 }
                             }
                         } elseif ($action === 'barber') {
                             include_once'form-barber.php';
                             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                                $result = insBarb();
-                                if ($result === true) {
-                                    header("Location: index.php");
+                                $barbEmail = filter_input(INPUT_POST, 'barbEmail');
+                                $barbAffiliation = filter_input(INPUT_POST, 'barbAffiliation');
+                                $check1 = checkAffl($barbAffiliation);
+                                if ($check1 === true) {
+                                    $check2 = checkBarberEmail($barbEmail);
+                                    if ($check2 === false) {
+                                        $result = insBarb();
+                                        if ($result === true) {
+                                            header("Location: index.php");
+                                        } else {
+                                            echo 'failed to create account';
+                                        }
+                                    } else {
+                                        echo "Please choose another email.";
+                                    }
                                 } else {
-                                    echo 'failed to create account';
+                                    echo 'This is not a valid barbershop name.';
                                 }
-                            } 
+                            }
                         } elseif ($action === 'customer') {
                             include_once'form-customer.php';
                             $result = insCust();

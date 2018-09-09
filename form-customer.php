@@ -53,10 +53,10 @@
                         }
                         if (basename($_SERVER['PHP_SELF']) === 'settings.php') {
                             ?>
-                            <input type="submit" value="Save Changes" name="submit">
+                            <input type="submit" value="Save Changes" name="UpdateCustomer">
                         <?php } else {
                             ?>
-                            <input type="submit" value="Create Account" name="submit">
+                            <input type="submit" value="Create Account" name="CreateCustomer">
                             <?php
                         }
                         ?>
