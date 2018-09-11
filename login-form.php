@@ -27,7 +27,7 @@ and open the template in the editor.
                 if (isset($_SESSION['authentication'])) {
                     if ($_SESSION['authentication'] === true) {
                         echo "<a href='logout.php' style='position:relative;text-decoration:none; color:lightgrey; left: 877px;'>Log Out</a>";
-                        echo "<a href='persProfile.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
+                        echo "<a href='personal-Profile.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
                     } else {
                         echo "<div style='width:125px; position: relative; left:875px; top:21px;'><a href='login-form.php' style='text-decoration:none; color:lightgrey;'>Log in |</a><a href='signup.php' style='text-decoration:none; color:lightgrey;'> Sign up</a></div>";
                     }
@@ -60,7 +60,11 @@ and open the template in the editor.
                             <input id="loginAcc3"type="radio" name="loginAcc" value="customer">
                             <br/>
                             <br/>
-                            <a href="signup.php">Don't have an account?</a>
+                            <a href="signup.php" style="text-decoration: none; color:#ff442a;">Don't have an account <span style="color:black;">|</span> </a>
+                            <a href="reset-password.php" style="text-decoration: none; color:#ff442a;">Forgot Password </a>
+                            <br/>
+                            <br/>
+                            <a href="admin-login-form.php" style="text-decoration: none; color:white;">Admin Login</a>
                             <br/>
                             <br/>
                             <input type="submit" name="login" value="Login">

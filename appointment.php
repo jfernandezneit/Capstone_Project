@@ -27,7 +27,7 @@ and open the template in the editor.
                 if (isset($_SESSION['authentication'])) {
                     if ($_SESSION['authentication'] === true) {
                         echo "<a href='logout.php' style='position:relative;text-decoration:none; color:lightgrey; left: 877px;'>Log Out</a>";
-                        echo "<a href='persProfile.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
+                        echo "<a href='personal-Profile.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
                     } else {
                         echo "<div style='width:125px; position: relative; left:875px; top:21px;'><a href='login-form.php' style='text-decoration:none; color:lightgrey;'>Log in |</a><a href='signup.php' style='text-decoration:none; color:lightgrey;'> Sign up</a></div>";
                     }
@@ -146,7 +146,7 @@ and open the template in the editor.
                                     echo "failed to update Days and Times available for barber.";
                                 }
                                 if ($stmt6->execute() > 0 && $stmt6->rowCount() > 0) {
-                                    header("Location: successApp.php?day={$result['Day']}&time=$appTime");
+                                    header("Location: success-appointment.php?day={$result['Day']}&time=$appTime");
                                 }
                             } elseif (isset($appTime) && empty($appTime)) {
                                 echo "Please choose a valid time.";

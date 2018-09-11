@@ -25,7 +25,7 @@ if (isset($_POST['login'])) {
                 $_SESSION['accType'] = 'barbershop';
                 header("Location: index.php");
             } else {
-                echo 'poop1';
+                echo 'failed';
             }
         } elseif ($account === 'barber') {
             $stmt = $db->prepare("SELECT BarberID, Email, Password FROM barbers WHERE Email = :userEmail AND Password = :userPassword");
@@ -41,7 +41,7 @@ if (isset($_POST['login'])) {
                 $_SESSION['accType'] = 'barber';
                 header("Location: index.php");
             } else {
-                echo 'poop2';
+                echo 'failed';
             }
         } elseif ($account === 'customer') {
             $stmt = $db->prepare("SELECT CustomerID ,Email, Password FROM barbercust WHERE Email = :userEmail AND Password = :userPassword");
@@ -57,9 +57,31 @@ if (isset($_POST['login'])) {
                 $_SESSION['accType'] = 'customer';
                 header("Location: index.php");
             } else {
-                echo 'poop3';
+                echo 'failed';
             }
         }
+    } else {
+        echo "<div style='position:relative; left:350px; top:150px; color:red;'>Please enter a username and password.</div>";
+    }
+}
+
+if(isset($_POST['adminLogin'])){
+    $_SESSION['authentication'] = false;
+    if(!empty(filter_input(INPUT_POST,'adminUsername')) && !empty(filter_input(INPUT_POST,'adminPassword'))){
+       $adminUsername = filter_input(INPUT_POST,'adminUsername');
+       $temp = filter_input(INPUT_POST,'adminPassword');
+       $adminPassword = SHA1($temp);
+       $stmt = $db->prepare("SELECT ID, username, password FROM admins WHERE username = '$adminUsername' AND password = '$adminPassword'");
+       if($stmt->execute() && $stmt->rowCount() > 0){
+           $result = $stmt->fetch(PDO::FETCH_ASSOC);
+           $_SESSION['user-id'] = $result['ID'];
+           $_SESSION['authentication'] = true;
+           $_SESSION['accType'] = 'admin';
+           header("Location: index.php");
+       } else {
+           echo 'This is not a valid admin login. Please try again.';
+       }
+       
     }
 }
 
