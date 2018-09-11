@@ -7,14 +7,21 @@ function search() {
     $key = filter_input(INPUT_GET, 'search');
     $action = filter_input(INPUT_GET, 'searchAction');
     if ($action === 'Barber') {
-        $stmt = $db->prepare("SELECT * FROM barbers WHERE BarberName LIKE '$key'");
+        $stmt = $db->prepare("SELECT * FROM barbers WHERE Name LIKE '$key'");
         if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } else {
             $result = 'No barbers with this name exist.';
         }
     } elseif ($action === 'Barbershop') {
-        $stmt = $db->prepare("SELECT * FROM barbershops WHERE BarbershopName LIKE '$key'");
+        $stmt = $db->prepare("SELECT * FROM barbershops WHERE Name LIKE '$key'");
+        if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            $result = 'No shops with this name exist.';
+        }
+    } elseif ($action === 'Customer') {
+        $stmt = $db->prepare("SELECT * FROM barbercust WHERE Name LIKE '$key'");
         if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } else {
@@ -136,7 +143,12 @@ function revTime($day, $time) {
 
 function getShopInfo() {
     $db = getDatabase();
-    $stmt = $db->prepare("SELECT * FROM barbershops WHERE BarbershopID = {$_SESSION['user-id']}");
+    if($_SESSION['accType'] !== 'barbershop'){
+        $barbershopID = filter_input(INPUT_GET, 'barbershop-id');
+        $stmt = $db->prepare("SELECT * FROM barbershops WHERE BarbershopID = $barbershopID");
+    }else {
+        $stmt = $db->prepare("SELECT * FROM barbershops WHERE BarbershopID = {$_SESSION['user-id']}");
+    }    
     if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;
@@ -167,9 +179,9 @@ function getCustInfo() {
     $db = getDatabase();
     if ($_SESSION['accType'] !== 'customer') {
         $customerID = filter_input(INPUT_GET, 'customer-id');
-        $stmt = $db->prepare("SELECT * FROM barbcust WHERE CustomerID = $customerID");
+        $stmt = $db->prepare("SELECT * FROM barbercust WHERE CustomerID = $customerID");
     } else {
-        $stmt = $db->prepare("SELECT * FROM barbcust WHERE CustomerID = {$_SESSION['user-id']}");
+        $stmt = $db->prepare("SELECT * FROM barbercust WHERE CustomerID = {$_SESSION['user-id']}");
     }
     $result = false;
     if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
@@ -204,10 +216,8 @@ function updShop() {
     } else {
         $bool = false;
         echo 'Failed to update.';
-        return $bool;        
+        return $bool;
     }
-
-    
 }
 
 function updBarb() {
@@ -274,7 +284,7 @@ function updPass() {
         }
     } elseif ($_SESSION['accType'] === 'customer') {
         $password = filter_input(INPUT_POST, 'newPass');
-        $stmt = $db->prepare("UPDATE barbcust SET Password = '$password' WHERE CustomerID = {$_SESSION['user-id']}");
+        $stmt = $db->prepare("UPDATE barbercust SET Password = '$password' WHERE CustomerID = {$_SESSION['user-id']}");
         if ($stmt->execute() > 0) {
             $bool = true;
             return $bool;
@@ -283,6 +293,78 @@ function updPass() {
         }
     } else {
         echo 'Please sign in.';
+    }
+}
+
+function checkUpdateStatus() {
+    $db = getDatabase();
+    $bool = false;
+    $account = filter_input(INPUT_GET, 'account-type');
+    $status = filter_input(INPUT_POST, 'Status');
+    $id = filter_input(INPUT_POST, 'ID');
+    if ($account === 'customer') {
+        $stmt = $db->prepare("UPDATE barbercust SET Status = '$status' WHERE CustomerID = '$id'");
+        if ($stmt->execute()) {
+            $bool = true;
+            return $bool;
+        } else {
+            echo 'Did not update the status';
+        }
+    } elseif ($account === 'barber') {
+        $stmt = $db->prepare("UPDATE barbers SET Status = '$status' WHERE BarberID = '$id'");
+        if ($stmt->execute()) {
+            $bool = true;
+            return $bool;
+        } else {
+            echo 'Did not update the status';
+        }
+    } elseif ($account === 'barbershop') {
+        $stmt = $db->prepare("UPDATE barbershops SET Status = '$status' WHERE BarbershopID = '$id'");
+        if ($stmt->execute()) {
+            $bool = true;
+            return $bool;
+        } else {
+            echo 'Did not update the status';
+        }
+    }
+}
+
+function updStatus() {
+    $id = filter_input(INPUT_POST, 'ID');
+    $name = filter_input(INPUT_POST, 'Name');
+    $status = filter_input(INPUT_POST, 'Status');
+    $check1 = checkStatus($status);
+    if ($check1 !== false) {
+        if (isset($id) && isset($name) && isset($status)) {
+            $result = checkUpdateStatus();
+            return $result;
+        } else {
+           echo 'Please make a valid entry2';
+           return false;
+        }
+    } else {
+        echo 'Please make a valid entry1';
+        return false;
+    }
+}
+
+function checkStatus($value1) {
+    $bool = false;
+    if ($value1 !== '0' && $value1 !== '1' && $value1 !== '2') {
+        return $bool;
+    } else {
+        $bool = true;
+        return $bool;
+    }
+}
+
+function isActive($value1){
+    $bool = false;
+    if($value1 === '1'){
+        $bool = true;
+        return $bool;
+    } else {
+        return $bool;
     }
 }
 
@@ -361,10 +443,11 @@ function insCust() {
     $db = getDatabase();
     $bool = false;
     $custUsername = filter_input(INPUT_POST, 'custUsername');
+    $custEmail = filter_input(INPUT_POST, 'custEmail');
     $custTemp = filter_input(INPUT_POST, 'custPass');
     $custPass = sha1($custTemp);
     $custPhone = filter_input(INPUT_POST, 'custPhone');
-    $stmt = $db->prepare("INSERT INTO barbercust SET Username = '$custUsername', Password = '$custPass', PhoneNumb = '$custPhone'");
+    $stmt = $db->prepare("INSERT INTO barbercust SET Email = '$custEmail', Name = '$custUsername', Password = '$custPass', PhoneNumb = '$custPhone'");
 
     if ($stmt->execute() && $stmt->rowCount() > 0) {
         $stmt2 = $db->prepare("SELECT CustomerID FROM barbercust WHERE Username = '$custUsername' AND PhoneNumb = '$custPhone'");

@@ -27,7 +27,13 @@ and open the template in the editor.
                 if (isset($_SESSION['authentication'])) {
                     if ($_SESSION['authentication'] === true) {
                         echo "<a href='logout.php' style='position:relative;text-decoration:none; color:lightgrey; left: 877px;'>Log Out</a>";
-                        echo "<a href='personal-Profile.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
+                        if ($_SESSION['accType'] === 'admin') {
+                            echo "<a href='admin-home.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
+                        } elseif ($_SESSION['accType'] === 'customer') {
+                            echo "<a href='settings.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
+                        } else {
+                            echo "<a href='personal-Profile.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
+                        }
                     } else {
                         echo "<div style='width:125px; position: relative; left:875px; top:21px;'><a href='login-form.php' style='text-decoration:none; color:lightgrey;'>Log in |</a><a href='signup.php' style='text-decoration:none; color:lightgrey;'> Sign up</a></div>";
                     }
@@ -40,26 +46,18 @@ and open the template in the editor.
             <div id="content" style="background-color: white; min-height: 300px;">
                 <?php
                 include_once 'dbconnect.php';
-
-                $db = getDatabase();
-                $barbershopID = filter_input(INPUT_GET, 'barbershop-id');
-                $barbershopName = filter_input(INPUT_GET, 'barbershop-name');
-                $stmt = $db->prepare("SELECT * FROM barbers WHERE BarbershopID = $barbershopID");
-                $results = array();
-                if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
-                    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $result = getBarberInfo();
+                if ($result !== false) {
                     ?>
                     <div style="font-size: 25px; margin:auto; position:relative; top:20px; width:200px;">Barbershop:<?php echo $barbershopName; ?></div>
                     <table style="margin:auto; border-bottom: 1.5px solid #ff442a; background-color: rgba(0,0,0,.6); position:relative; top:20px; width:277px;">
                         <tr style="border-bottom: .5px solid lightgray;">
                             <th style="text-align:center;">Name</th>
-                            <th style="text-align:center;">Rating</th>
                             <th style="text-align:center;">Book</th>
                         </tr>
                         <?php foreach ($results as $index): ?>
                             <tr>
                                 <td style="text-align:center;"><a style="text-decoration:none; color:lightgrey;" href="personal-Profile.php?barber-id=<?php echo$index['BarberID'] ?>"><?php echo $index['BarberName'] ?></a></td>
-                                <td style="text-align:center;"><?php echo $index['Rating'] ?> / 5</td>
                                 <td style="text-align:center;"><a style="text-decoration:none; color:lightgrey;" href="appointment.php?barber-id=<?php echo $index['BarberID'] ?>&barbershop-id=<?php echo $index['BarbershopID'] ?>">Book Now</a></td>
                             </tr>
                             <?php
