@@ -44,13 +44,16 @@ and open the template in the editor.
                         if (isset($_SESSION['user-id'])) {
                             include_once 'dbconnect.php';
                             include_once 'functions.php';
+                            $poop = setAppDays();
+                            print_r($poop);
+                            die();
                             $db = getDatabase();
-                            $barberID = filter_input(INPUT_GET, 'barber-id');
-                            $result1 = getDays();
+//                            $barberID = filter_input(INPUT_GET, 'barber-id');
+//                            $result1 = getDays();
                             $result2 = getBarberInfo();
-                            if ($result1 === "Barber has not set his times yet.") {
-                                echo $result1;
-                            }
+//                            if ($result1 === "Barber has not set his times yet.") {
+//                                echo $result1;
+//                            }
                             if ($result2 === "Not a valid barber. (002)") {
                                 echo $result2;
                             }
@@ -58,34 +61,34 @@ and open the template in the editor.
                             <div style="width:480px; margin:auto; background-color:rgba(0,0,0,.6); border-bottom: 1.5px solid #ff442a; position:relative; top:10px;">
                                 <div>
                                     <a href="profiles.php?barber-id=<?php echo $result2['BarberID']; ?>"><img style="width:150px;margin:5px 0px 0px 5px;" src="uploads/barbers/barberID<?php echo $result2['BarberID']; ?>/profilepic.jpg"/></a>
-                                    <div style="font-size:25px; position:relative; left:5px; width:20%"><?php echo $result2['BarberName'] ?></div>
-                                    <div style="width:50px; position:relative; left:75px; bottom:20px;"><?php echo $result2['Rating'] ?> / 5</div>
+                                    <div style="font-size:25px; position:relative; left:5px; width:20%"><?php echo $result2['Name'] ?></div>
                                 </div>
                                 <form method="POST" action="#">
                                     <label for="daysAvail" style="margin-left: 5px;">Days Available:</label>
                                     <select id="daysAvail" name="daysAvail">
                                         <?php
-                                        if ($result1['Monday'] != '') {
-                                            echo "<option value='Monday'>Monday</option>";
-                                        }
-                                        if ($result1['Tuesday'] != '') {
-                                            echo "<option value='Tuesday'>Tuesday</option>";
-                                        }
-                                        if ($result1['Wednesday'] != '') {
-                                            echo "<option value='Wednesday'>Wednesday</option>";
-                                        }
-                                        if ($result1['Thursday'] != '') {
-                                            echo "<option value='Thursday'>Thursday</option>";
-                                        }
-                                        if ($result1['Friday'] != '') {
-                                            echo "<option value='Friday'>Friday</option>";
-                                        }
-                                        if ($result1['Saturday'] != '') {
-                                            echo "<option value='Saturday'>Saturday</option>";
-                                        }
-                                        if ($result1['Sunday'] != '') {
-                                            echo "<option value='Sunday'>Sunday</option>";
-                                        }
+                                      
+//                                        if ($result1['Monday'] !== NULL) {
+//                                            echo "<option value='Monday'>Monday</option>";
+//                                        }
+//                                        if ($result1['Tuesday'] !== NULL) {
+//                                            echo "<option value='Tuesday'>Tuesday</option>";
+//                                        }
+//                                        if ($result1['Wednesday'] !== NULL) {
+//                                            echo "<option value='Wednesday'>Wednesday</option>";
+//                                        }
+//                                        if ($result1['Thursday'] !== NULL) {
+//                                            echo "<option value='Thursday'>Thursday</option>";
+//                                        }
+//                                        if ($result1['Friday'] !== NULL) {
+//                                            echo "<option value='Friday'>Friday</option>";
+//                                        }
+//                                        if ($result1['Saturday'] !== NULL) {
+//                                            echo "<option value='Saturday'>Saturday</option>";
+//                                        }
+//                                        if ($result1['Sunday'] !== NULL) {
+//                                            echo "<option value='Sunday'>Sunday</option>";
+//                                        }
                                         ?>
                                     </select>                            
                                     <input type="submit" name="submit" value="Set Day">

@@ -46,8 +46,9 @@ and open the template in the editor.
             <div id="content" style="background-color: white; min-height: 300px;">
                 <?php
                 include_once 'dbconnect.php';
-                $result = getBarberInfo();
-                if ($result !== false) {
+                $barbershopName = filter_input(INPUT_GET,'barbershop-name');
+                $results = getBarbers();
+                if ($results !== false) {
                     ?>
                     <div style="font-size: 25px; margin:auto; position:relative; top:20px; width:200px;">Barbershop:<?php echo $barbershopName; ?></div>
                     <table style="margin:auto; border-bottom: 1.5px solid #ff442a; background-color: rgba(0,0,0,.6); position:relative; top:20px; width:277px;">
@@ -57,13 +58,13 @@ and open the template in the editor.
                         </tr>
                         <?php foreach ($results as $index): ?>
                             <tr>
-                                <td style="text-align:center;"><a style="text-decoration:none; color:lightgrey;" href="personal-Profile.php?barber-id=<?php echo$index['BarberID'] ?>"><?php echo $index['BarberName'] ?></a></td>
+                                <td style="text-align:center;"><a style="text-decoration:none; color:lightgrey;" href="personal-Profile.php?barber-id=<?php echo$index['BarberID'] ?>"><?php echo $index['Name'] ?></a></td>
                                 <td style="text-align:center;"><a style="text-decoration:none; color:lightgrey;" href="appointment.php?barber-id=<?php echo $index['BarberID'] ?>&barbershop-id=<?php echo $index['BarbershopID'] ?>">Book Now</a></td>
                             </tr>
                             <?php
                         endforeach;
                     } else {
-                        echo "This barberhsop does not exist.";
+                        echo "This barbershop does not yet have any barbers.";
                     }
                     ?>
                 </table>

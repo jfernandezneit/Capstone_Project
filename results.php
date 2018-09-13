@@ -63,7 +63,7 @@
                     $search = filter_input(INPUT_POST, 'barbname-result');
                     $stmt = $db->prepare("SELECT * FROM barbershops WHERE Zip = '$zip'");
                     if (isset($search)) {
-                        $stmt = $db->prepare("SELECT * FROM barbershops WHERE Zip = '$zip' OR BarbershopName = '$search'");
+                        $stmt = $db->prepare("SELECT * FROM barbershops WHERE Zip = '$zip' OR Name = '$search'");
                     }
                     $results = array();
                     if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
@@ -71,12 +71,12 @@
                         foreach ($results as $x):
                             ?>
                             <div style="width:650px; height:150px; border-bottom: 1.5px solid #ff442a; position:relative; left: 330px; bottom:120px; margin-bottom: 20px; background-color: rgba(0,0,0,.6);">
-                                <div style="position:relative; left: 150px; top:5px;">Name: <?php echo $x['BarbershopName']; ?></div>
-                                <div style="position:relative; left: 150px; top:5px; margin-top:5px;">Address: <?php echo $x['Address']; ?></div>
-                                <div style="position:relative; left: 150px; top:5px; margin-top:5px;">Zip: <?php echo $x['Zip']; ?></div>
-                                <div style="position:relative; left: 150px; top:5px; margin-top:5px;">Number: <?php echo $x['PhoneNumber']; ?></div>
-                                <div style="position:relative; left: 150px; top:5px; margin-top:5px;">Rating: <?php echo $x['Rating'] . " / 5"; ?></div>
-                                <div style="position:relative; left: 525px;"><a style="text-decoration: none; color:lightgrey" href="results-barbers.php?barbershop-id=<?php echo $x['BarbershopID'] ?>&barbershop-name=<?php echo $x['BarbershopName'] ?>">Set Appointment</a></div>
+                                <div><img style="width:100px; margin: 5px 0px 0px 5px;" src="uploads/barbershops/barbershopID<?php echo $x['BarbershopID']; ?>/profilepic.jpg"/></div>
+                                <div style="position:relative; left: 150px; bottom:60px;">Name: <?php echo $x['Name']; ?></div>
+                                <div style="position:relative; left: 150px; bottom:60px; margin-top:5px;">Address: <?php echo $x['Address']; ?></div>
+                                <div style="position:relative; left: 150px; bottom:60px; margin-top:5px;">Zip: <?php echo $x['Zip']; ?></div>
+                                <div style="position:relative; left: 150px; bottom:60px; margin-top:5px;">Number: <?php echo $x['PhoneNumber']; ?></div>
+                                <div style="position:relative; left: 525px; bottom:60px;"><a style="text-decoration: none; color:lightgrey" href="results-barbers.php?barbershop-id=<?php echo $x['BarbershopID'] ?>&barbershop-name=<?php echo $x['Name'] ?>">Set Appointment</a></div>
                             </div>                    
                             <?php
                         endforeach;

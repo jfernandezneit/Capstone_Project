@@ -37,7 +37,7 @@ function getDays() {
     $barberID = filter_input(INPUT_GET, 'barber-id');
     $stmt = $db->prepare("SELECT * FROM daystimesavail WHERE BarberID = '$barberID' AND BarbershopID = '$barbershopID'");
     $result = "Barber has not set his times yet.";
-    if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
+    if ($stmt->execute() && $stmt->rowCount() > 0) {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;
     } else {
@@ -60,6 +60,36 @@ function getDay() {
         return $result;
     } else {
         return $result;
+    }
+}
+
+function setAppDays() {
+    $result1 = getDays();
+    if ($result1 === "Barber has not set his times yet.") {
+        echo $result1;
+    }
+    if ($result1['Monday'] !== NULL) {
+        echo "<option value='Monday'>Monday</option>";
+    } else {
+        
+    }
+    if ($result1['Tuesday'] !== NULL) {
+        echo "<option value='Tuesday'>Tuesday</option>";
+    }
+    if ($result1['Wednesday'] !== NULL) {
+        echo "<option value='Wednesday'>Wednesday</option>";
+    }
+    if ($result1['Thursday'] !== NULL) {
+        echo "<option value='Thursday'>Thursday</option>";
+    }
+    if ($result1['Friday'] !== NULL) {
+        echo "<option value='Friday'>Friday</option>";
+    }
+    if ($result1['Saturday'] !== NULL) {
+        echo "<option value='Saturday'>Saturday</option>";
+    }
+    if ($result1['Sunday'] !== NULL) {
+        echo "<option value='Sunday'>Sunday</option>";
     }
 }
 
@@ -143,12 +173,12 @@ function revTime($day, $time) {
 
 function getShopInfo() {
     $db = getDatabase();
-    if($_SESSION['accType'] !== 'barbershop'){
+    if ($_SESSION['accType'] !== 'barbershop') {
         $barbershopID = filter_input(INPUT_GET, 'barbershop-id');
         $stmt = $db->prepare("SELECT * FROM barbershops WHERE BarbershopID = $barbershopID");
-    }else {
+    } else {
         $stmt = $db->prepare("SELECT * FROM barbershops WHERE BarbershopID = {$_SESSION['user-id']}");
-    }    
+    }
     if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;
@@ -189,6 +219,21 @@ function getCustInfo() {
         return $result;
     } else {
         return $result;
+    }
+}
+
+function getBarbers() {
+    $db = getDatabase();
+    $bool = false;
+    $barbershopID = filter_input(INPUT_GET, 'barbershop-id');
+//    $barbershopName = filter_input(INPUT_GET,'barbershop-name');
+
+    $stmt = $db->prepare("SELECT * FROM barbers WHERE BarbershopID = '$barbershopID'");
+    if ($stmt->execute() && $stmt->rowCount() > 0) {
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
+    } else {
+        return $bool;
     }
 }
 
@@ -339,8 +384,8 @@ function updStatus() {
             $result = checkUpdateStatus();
             return $result;
         } else {
-           echo 'Please make a valid entry2';
-           return false;
+            echo 'Please make a valid entry2';
+            return false;
         }
     } else {
         echo 'Please make a valid entry1';
@@ -358,9 +403,9 @@ function checkStatus($value1) {
     }
 }
 
-function isActive($value1){
+function isActive($value1) {
     $bool = false;
-    if($value1 === '1'){
+    if ($value1 === 1) {
         $bool = true;
         return $bool;
     } else {
@@ -408,35 +453,38 @@ function insBarb() {
     $barbEmail = filter_input(INPUT_POST, 'barbEmail');
     $barbTemp = filter_input(INPUT_POST, 'barbPass');
     $barbPass = sha1($barbTemp);
-    $stmt1 = $db->prepare("SELECT BarbershopID FROM barbershops WHERE Name = '$barbAffiliation'");
+    $barbershopID = checkAffl($barbAffiliation);
+    $stmt2 = $db->prepare("INSERT INTO barbers SET BarbershopID = $barbershopID, Name = '$barbName', Email = '$barbEmail', Password = '$barbPass'");
 
-    if ($stmt1->execute() && $stmt1->rowCount() > 0) {
-        $result = $stmt1->fetch(PDO::FETCH_ASSOC);
-        $barbershopID = $result['BarbershopID'];
-        $stmt2 = $db->prepare("INSERT INTO barbers SET BarbershopID = $barbershopID, Name = '$barbName', Email = '$barbEmail', Password = '$barbPass'");
+    if ($stmt2->execute() && $stmt2->rowCount() > 0) {
+        $stmt3 = $db->prepare("SELECT BarberID FROM barbers WHERE Email = '$barbEmail' AND BarbershopID = '$barbershopID'");
 
-        if ($stmt2->execute() && $stmt2->rowCount() > 0) {
-            $stmt3 = $db->prepare("SELECT BarberID FROM barbers WHERE Email = '$barbEmail' AND BarbershopID = '$barbershopID'");
-
-            if ($stmt3->execute() > 0 && $stmt3->rowCount() > 0) {
-                $results = $stmt3->fetch(PDO::FETCH_ASSOC);
-                $tmp_name = $_FILES['barberPic']['tmp_name'];
-                $currentDir = getcwd();
-                mkdir("$currentDir/uploads/barbers/barberID{$results['BarberID']}", 0777, true);
-                $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbers' . DIRECTORY_SEPARATOR . 'barberID' . $results['BarberID'];
-                $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
-                $result = move_uploaded_file($tmp_name, $new_name);
-                $bool = true;
-                return $bool;
-            }
-        } else {
-            echo 'failed to create account.';
+        if ($stmt3->execute() > 0 && $stmt3->rowCount() > 0) {
+            $results = $stmt3->fetch(PDO::FETCH_ASSOC);
+            $tmp_name = $_FILES['barberPic']['tmp_name'];
+            $currentDir = getcwd();
+            mkdir("$currentDir/uploads/barbers/barberID{$results['BarberID']}", 0777, true);
+            $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbers' . DIRECTORY_SEPARATOR . 'barberID' . $results['BarberID'];
+            $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
+            $result = move_uploaded_file($tmp_name, $new_name);
+            $bool = true;
             return $bool;
         }
     } else {
-        echo 'This barbershop does not exist.';
+        echo 'failed to create account.';
         return $bool;
     }
+}
+
+function setDaysTimeAvailable() {
+    // im going to use this function when creating the barber account to set their days to null 
+    // in signup-sc.php 
+    
+    $db = getDatabase();
+    $barbaffiliation = filter_input(INPUT_POST, 'barbAffiliation');
+    $barbershopID = checkAffl($barbaffiliation);
+//    $barberID = filter_input(INPUT_GET, );
+    $stmt = $db->prepare("INSERT INTO daystimesavail SET barberID = ''");
 }
 
 function insCust() {
@@ -514,8 +562,7 @@ function checkAffl($value1) {
 //                die('nasjkdnfjhb');
                 return $result;
             }
-            $bool = true;
-            return $bool;
+            return $x['BarbershopID'];
         }
     endforeach;
 

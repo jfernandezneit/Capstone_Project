@@ -67,6 +67,7 @@ if (isset($_POST['login'])) {
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
                 $status = $result['Status'];
                 $check = isActive($status);
+                echo $status;
                 if ($check === true) {
                     $_SESSION['user-id'] = $result['CustomerID'];
                     $_SESSION['authentication'] = true;

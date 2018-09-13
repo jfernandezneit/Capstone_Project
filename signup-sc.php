@@ -75,7 +75,7 @@ and open the template in the editor.
                                 $barbEmail = filter_input(INPUT_POST, 'barbEmail');
                                 $barbAffiliation = filter_input(INPUT_POST, 'barbAffiliation');
                                 $check1 = checkAffl($barbAffiliation);
-                                if ($check1 === true) {
+                                if ($check1 !== false) {
                                     $check2 = checkBarberEmail($barbEmail);
                                     if ($check2 === false) {
                                         $result = insBarb();
