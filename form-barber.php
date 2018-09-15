@@ -19,7 +19,7 @@
         }
         ?>
         <div id="content" style="background-color: white; min-height: 200px">
-            <div style="width:100%; background-color:rgba(0,0,0,.6); position: relative; top: 50px; border-bottom: 1.5px solid #ff442a">
+            <div style="width:100%; background-color:rgba(0,0,0,.6); position: relative; top: 50px; border-bottom: 1.5px solid #ff442a; margin-bottom: 75px;">
                 <form method="POST" action="#" enctype="multipart/form-data">
                     <?php if (basename($_SERVER['PHP_SELF']) === 'settings.php') { ?>
                         <label for="barbName">Barbers Name: </label>

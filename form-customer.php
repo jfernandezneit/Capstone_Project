@@ -9,7 +9,7 @@
         include_once 'functions.php';
 
         if (basename($_SERVER['PHP_SELF']) === 'settings.php') {
-            $result = getBarberInfo();
+            $result = getCustInfo();
             if ($result === false) {
                 echo "Please sign in.";
             }

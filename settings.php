@@ -27,11 +27,11 @@ and open the template in the editor.
                 if (isset($_SESSION['authentication'])) {
                     if ($_SESSION['authentication'] === true) {
                         echo "<a href='logout.php' style='position:relative;text-decoration:none; color:lightgrey; left: 877px;'>Log Out</a>";
-                        if($_SESSION['accType'] === 'admin') {
+                        if ($_SESSION['accType'] === 'admin') {
                             echo "<a href='admin-home.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
-                        }elseif($_SESSION['accType'] === 'customer'){
+                        } elseif ($_SESSION['accType'] === 'customer') {
                             echo "<a href='settings.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
-                        } else{
+                        } else {
                             echo "<a href='personal-Profile.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
                         }
                     } else {
@@ -107,7 +107,6 @@ and open the template in the editor.
                         } elseif ($_SESSION['accType'] === 'barber') {
 
                             $result = getBarberInfo();
-
                             if ($result !== false) {
 
                                 $barbAffiliation = getAffl($result['BarbershopID'])
@@ -135,13 +134,13 @@ and open the template in the editor.
                                         <?php
                                         include_once 'form-pass.php';
                                         $update = filter_input(INPUT_POST, 'UpdateBarber');
-                                
+
                                         if (isset($update)) {
-                                            
+
                                             $barbEmail = filter_input(INPUT_POST, 'barbEmail');
                                             $barbAffiliation = filter_input(INPUT_POST, 'barbAffiliation');
                                             $check1 = checkAffl($barbAffiliation);
-                                            if (!empty($check1)) {                                                
+                                            if (!empty($check1)) {
                                                 $check2 = checkBarberEmail($barbEmail);
                                                 if ($check2 === false) {
                                                     $result = updBarb();
@@ -161,11 +160,17 @@ and open the template in the editor.
 
                                     </div>
                                 </div>
+                                <div style="width:10%; background-color: rgba(0,0,0,.6); position:relative; bottom:720px; min-height:75px;">
+                                    <a href="settings.php" style="text-decoration: none; color: white;">Main</a>
+                                    <hr>
+                                    <a href="settings-appointments.php" style="text-decoration: none; color: white;">Appointments</a>
+                                </div>
                                 <?php
                             } else {
                                 echo "Please make sure you are signed in.";
                             }
                         } elseif ($_SESSION['accType'] === 'customer') {
+
                             $result = getCustInfo();
                             if ($result !== false) {
                                 ?>
@@ -174,11 +179,12 @@ and open the template in the editor.
 
                                         <div style="font-size:22px;"><b>Current info</b></div>
                                         <hr>
-                                        <label>Customer Username: <b><?php echo $result['Username'] ?></b></label>
+                                        <label>Customer Username: <b><?php echo $result['Email'] ?></b></label>
                                         <br/>
-                                        <label>Customer Phone: <b><?php echo $result['PhoneNumber'] ?></b></label>
+                                        <label>Customer Phone: <b><?php echo $result['PhoneNumb'] ?></b></label>
                                         <br/>
-                                        <div>Profile Picture:  <img style="width:150px;" src="./uploads/customers/customerID<?php echo $result['CustomerID'] ?>/profilepic.jpg"/></div>
+                                        <div>Profile Picture:  <img style="width:150px;" src="uploads/customers/customerID<?php echo $result['CustomerID'] ?>/profile.jpg"/></div>
+                                        <?php echo "{$result['CustomerID']}" ?>
                                         <br/>
                                         <div style="font-size:22px;"><b>Change info</b></div>
                                         <hr/>
@@ -204,9 +210,17 @@ and open the template in the editor.
                                 } else {
                                     echo "Please make sure you are signed in.";
                                 }
+                                ?>
+                                <div style="width:10%; background-color: rgba(0,0,0,.6); position:relative; min-height:75px; right:123px; bottom: 630px;">
+                                    <a href="settings.php" style="text-decoration: none; color: white;">Main</a>
+                                    <hr>
+                                    <a href="settings-appointments.php" style="text-decoration: none; color: white;">Appointments</a>
+                                </div>
+                                <?php
                             }
                         } //End of the isset for authentication
                         ?>
+
                     </div><!-- End of content div -->
 
                 </div> <!--End of wrapper div -->

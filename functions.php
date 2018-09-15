@@ -95,8 +95,10 @@ function setAppointment($value1) {
     $barberID = filter_input(INPUT_GET, 'barber-id');
     $db = getDatabase();
     $bool = false;
+    $customerInfo = getCustInfo();
+    $customerName = $customerInfo['Name'];
     if($value1 === 'Monday' || $value1 === 'Tuesday' || $value1 === 'Wednesday' || $value1 === 'Thursday' || $value1 === 'Friday' || $value1 === 'Saturday' || $value1 === 'Sunday') {
-        $stmt = $db->prepare("INSERT INTO appointments SET CustomerID = {$_SESSION['user-id']}, BarberID = $barberID, Day = '$value1'");
+        $stmt = $db->prepare("INSERT INTO appointments SET CustomerID = {$_SESSION['user-id']}, BarberID = $barberID, Day = '$value1', CustomerName = '$customerName'");
     }else{
         $temp = getAppointmentID();
         $appointmentID = $temp['AppointmentID'];
@@ -620,4 +622,34 @@ function checkBarberEmail($value1) {
     endforeach;
 
     return $bool;
+}
+function getAppointments(){
+    $db = getDatabase();
+    $bool = false;
+    if($_SESSION['accType'] === 'barber'){
+        $stmt = $db->prepare("SELECT * FROM appointments WHERE BarberID = {$_SESSION['user-id']}");
+    }elseif($_SESSION['accType'] === 'customer'){
+        $stmt = $db->prepare("SELECT * FROM appointments WHERE CustomerID = {$_SESSION['user-id']}");
+    } else{
+        return $bool;
+    }
+    if($stmt->execute()){
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }else{
+        return $bool;
+    }
+}
+
+function deleteAppointment(){
+    $db = getDatabase();
+    $bool = false;
+    $appointmentID = filter_input(INPUT_GET, 'appointment-id');
+    $stmt = $db->prepare("DELETE FROM appointments WHERE  AppointmentID = $appointmentID");
+    if($stmt->execute()){
+        $bool = true;
+        return $bool;
+    } else {
+        return $bool;
+    }
 }

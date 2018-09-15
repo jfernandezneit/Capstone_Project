@@ -48,7 +48,7 @@ and open the template in the editor.
                             $db = getDatabase();
                             $barberID = filter_input(INPUT_GET, 'barber-id');
                             $result1 = getBarberInfo();
-                            
+
                             if ($result1 !== false) {
                                 ?>
                                 <div style="width:480px; margin:auto; background-color:rgba(0,0,0,.6); border-bottom: 1.5px solid #ff442a; position:relative; top:10px;">
@@ -140,6 +140,8 @@ and open the template in the editor.
                     } else {
                         echo "You do not have access to this page please sign in.";
                     }
+                } else {
+                    echo "You do not have access to this page please sign in.";
                 }
                 ?>
 
