@@ -31,93 +31,99 @@ function search() {
     return $result;
 }
 
-function getDays() {
+function getBarbersDaysAvailable() {
     $db = getDatabase();
     $barbershopID = filter_input(INPUT_GET, 'barbershop-id');
     $barberID = filter_input(INPUT_GET, 'barber-id');
     $stmt = $db->prepare("SELECT * FROM daystimesavail WHERE BarberID = '$barberID' AND BarbershopID = '$barbershopID'");
-    $result = "Barber has not set his times yet.";
+    $bool = false;
     if ($stmt->execute() && $stmt->rowCount() > 0) {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;
     } else {
-        return $result;
+        return $bool;
     }
 }
 
-function getDay() {
+function getAppointmentDay() {
     $db = getDatabase();
-    $results = getAppID();
+    $temp = getAppointmentID();
+    $results = $temp['AppointmentID'];
     if ($results === "failed") {
         echo $results;
     }
-    $appID = end($results);
+    $appID = $results;
     $barberID = filter_input(INPUT_GET, 'barber-id');
-    $stmt = $db->prepare("SELECT Day FROM appointments WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID AND AppointmentID = {$appID['AppointmentID']}");
-    $result = "failed";
+    $stmt = $db->prepare("SELECT Day FROM appointments WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID AND AppointmentID = $appID");
+    $bool = "failed";
     if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;
     } else {
-        return $result;
+        return $bool;
     }
 }
 
-function setAppDays() {
-    $result1 = getDays();
-    if ($result1 === "Barber has not set his times yet.") {
-        echo $result1;
+function viewAvailablesetDays() {
+    $result = getBarbersDaysAvailable();
+    if ($bool === false) {
+        echo "Barber does not have his times set yet.";
     }
-    if ($result1['Monday'] !== NULL) {
+    if ($result['Monday'] !== NULL) {
         echo "<option value='Monday'>Monday</option>";
-    } else {
-        
     }
-    if ($result1['Tuesday'] !== NULL) {
+    if ($result['Tuesday'] !== NULL) {
         echo "<option value='Tuesday'>Tuesday</option>";
     }
-    if ($result1['Wednesday'] !== NULL) {
+    if ($result['Wednesday'] !== NULL) {
         echo "<option value='Wednesday'>Wednesday</option>";
     }
-    if ($result1['Thursday'] !== NULL) {
+    if ($result['Thursday'] !== NULL) {
         echo "<option value='Thursday'>Thursday</option>";
     }
-    if ($result1['Friday'] !== NULL) {
+    if ($result['Friday'] !== NULL) {
         echo "<option value='Friday'>Friday</option>";
     }
-    if ($result1['Saturday'] !== NULL) {
+    if ($result['Saturday'] !== NULL) {
         echo "<option value='Saturday'>Saturday</option>";
     }
-    if ($result1['Sunday'] !== NULL) {
+    if ($result['Sunday'] !== NULL) {
         echo "<option value='Sunday'>Sunday</option>";
     }
 }
-
-function setApp($appDay) {
+function setAppointment($value1) {
     $barberID = filter_input(INPUT_GET, 'barber-id');
     $db = getDatabase();
-    $stmt = $db->prepare("INSERT INTO appointments SET CustomerID = {$_SESSION['user-id']}, BarberID = $barberID, Day = '$appDay'");
+    $bool = false;
+    if($value1 === 'Monday' || $value1 === 'Tuesday' || $value1 === 'Wednesday' || $value1 === 'Thursday' || $value1 === 'Friday' || $value1 === 'Saturday' || $value1 === 'Sunday') {
+        $stmt = $db->prepare("INSERT INTO appointments SET CustomerID = {$_SESSION['user-id']}, BarberID = $barberID, Day = '$value1'");
+    }else{
+        $temp = getAppointmentID();
+        $appointmentID = $temp['AppointmentID'];
+        $stmt = $db->prepare("UPDATE appointments SET Time = '$value1' WHERE AppointmentID = $appointmentID");
+    }
     if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
-        $output = 'success';
-        return $output;
+        $bool = true;
+        return $bool;
     } else {
-        return false;
+        return $bool;
     }
 }
 
-function getAppID() {
+function getAppointmentID() {
     $db = getDatabase();
     $barberID = filter_input(INPUT_GET, 'barber-id');
     $stmt = $db->prepare("SELECT AppointmentID FROM appointments WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID");
     if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $temp = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = end($temp);
         return $result;
     } else {
         return false;
     }
 }
 
-function getTimes($day) {
+function getTimesFromDay($day) {
     $db = getDatabase();
     $barberID = filter_input(INPUT_GET, 'barber-id');
     $stmt = $db->prepare("SELECT $day FROM daystimesavail WHERE BarberID = $barberID");
@@ -132,22 +138,26 @@ function getTimes($day) {
 function revTime($day, $time) {
     $db = getDatabase();
     $barberID = filter_input(INPUT_GET, 'barber-id');
-    $temp = getTimes($day);
+    $temp = getTimesFromDay($day);
     $tempTimes = explode(",", $temp[$day]);
     $key = array_search($time, $tempTimes, true);
     $key2 = $key + 1;
     if ($key !== false) {
+        
         unset($tempTimes[$key]);
         $tempTimes[$key] = $tempTimes[$key2];
         unset($tempTimes[$key2]);
         $key3 = $key2 + 1;
+        
         for ($x = $key2; $x < count($tempTimes); $x++):
             $tempTimes[$x] = $tempTimes[$key3];
             unset($tempTimes[$key3]);
             $key3++;
         endfor;
+        
         $availTimes = "";
         $lastElement = end($tempTimes);
+        
         for ($x = 0; $x < count($tempTimes); $x++):
             if ($tempTimes[$x] === $lastElement) {
                 $availTimes .= $tempTimes[$x] . ",  ";
@@ -161,7 +171,7 @@ function revTime($day, $time) {
         $availTimes = $str1 . $str2;
         $stmt = $db->prepare("UPDATE daystimesavail SET $day = '$availTimes' WHERE BarberID = $barberID");
         if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
-            $result = "success";
+            $result = true;
             return $result;
         } else {
             return false;
@@ -174,7 +184,12 @@ function revTime($day, $time) {
 function getShopInfo() {
     $db = getDatabase();
     if ($_SESSION['accType'] !== 'barbershop') {
-        $barbershopID = filter_input(INPUT_GET, 'barbershop-id');
+        $temp = filter_input(INPUT_GET, 'barbershop-id');
+        if (isset($temp) && !empty($temp)) {
+            $barbershopID = filter_input(INPUT_GET, 'barbershop-id');
+        } else {
+            $barbershopID = filter_input(INPUT_POST, 'barbAffiliation');
+        }
         $stmt = $db->prepare("SELECT * FROM barbershops WHERE BarbershopID = $barbershopID");
     } else {
         $stmt = $db->prepare("SELECT * FROM barbershops WHERE BarbershopID = {$_SESSION['user-id']}");
@@ -454,21 +469,26 @@ function insBarb() {
     $barbTemp = filter_input(INPUT_POST, 'barbPass');
     $barbPass = sha1($barbTemp);
     $barbershopID = checkAffl($barbAffiliation);
-    $stmt2 = $db->prepare("INSERT INTO barbers SET BarbershopID = $barbershopID, Name = '$barbName', Email = '$barbEmail', Password = '$barbPass'");
+    $stmt1 = $db->prepare("INSERT INTO barbers SET BarbershopID = $barbershopID, Name = '$barbName', Email = '$barbEmail', Password = '$barbPass'");
 
-    if ($stmt2->execute() && $stmt2->rowCount() > 0) {
-        $stmt3 = $db->prepare("SELECT BarberID FROM barbers WHERE Email = '$barbEmail' AND BarbershopID = '$barbershopID'");
+    if ($stmt1->execute() && $stmt1->rowCount() > 0) {
+        $check = setDaysTimeAvailable();
+        if ($check === true) {
+            $stmt2 = $db->prepare("SELECT BarberID FROM barbers WHERE Email = '$barbEmail' AND BarbershopID = '$barbershopID'");
 
-        if ($stmt3->execute() > 0 && $stmt3->rowCount() > 0) {
-            $results = $stmt3->fetch(PDO::FETCH_ASSOC);
-            $tmp_name = $_FILES['barberPic']['tmp_name'];
-            $currentDir = getcwd();
-            mkdir("$currentDir/uploads/barbers/barberID{$results['BarberID']}", 0777, true);
-            $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbers' . DIRECTORY_SEPARATOR . 'barberID' . $results['BarberID'];
-            $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
-            $result = move_uploaded_file($tmp_name, $new_name);
-            $bool = true;
-            return $bool;
+            if ($stmt2->execute() > 0 && $stmt2->rowCount() > 0) {
+                $results = $stmt2->fetch(PDO::FETCH_ASSOC);
+                $tmp_name = $_FILES['barberPic']['tmp_name'];
+                $currentDir = getcwd();
+                mkdir("$currentDir/uploads/barbers/barberID{$results['BarberID']}", 0777, true);
+                $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbers' . DIRECTORY_SEPARATOR . 'barberID' . $results['BarberID'];
+                $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
+                $result = move_uploaded_file($tmp_name, $new_name);
+                $bool = true;
+                return $bool;
+            }
+        } else {
+            echo 'Please go to your settings and insert your available times.';
         }
     } else {
         echo 'failed to create account.';
@@ -477,14 +497,18 @@ function insBarb() {
 }
 
 function setDaysTimeAvailable() {
-    // im going to use this function when creating the barber account to set their days to null 
-    // in signup-sc.php 
-    
     $db = getDatabase();
-    $barbaffiliation = filter_input(INPUT_POST, 'barbAffiliation');
-    $barbershopID = checkAffl($barbaffiliation);
-//    $barberID = filter_input(INPUT_GET, );
-    $stmt = $db->prepare("INSERT INTO daystimesavail SET barberID = ''");
+    $bool = false;
+    $result = getShopInfo();
+    $barberID = filter_input(INPUT_GET, 'barber-id');
+    $barbershopID = $result['BarbershopID'];
+    $stmt = $db->prepare("INSERT INTO daystimesavail SET barberID = $barberID, barbershopID = $barbershopID");
+    if ($stmt->execute() && $stmt->rowCount() > 0) {
+        $bool = true;
+        return $bool;
+    } else {
+        return $bool;
+    }
 }
 
 function insCust() {

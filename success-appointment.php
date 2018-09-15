@@ -50,6 +50,7 @@ and open the template in the editor.
                     <div>Successfully set appointment</div>
                     <br/>
                     <div>Appointment is: <b><?php echo $day ?></b> at <b><?php echo $time; ?></b></div>
+                    <div style="margin:auto; width:75px;"><a href="index.php" style="text-decoration: none; color:gray;">Go Home</a></div>
                 </div>
             </div><!-- End of content div -->
 
