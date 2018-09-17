@@ -42,106 +42,117 @@ and open the template in the editor.
                 if (isset($_SESSION['authentication'])) {
                     if ($_SESSION['authentication'] === true) {
                         if (isset($_SESSION['user-id'])) {
-                            include_once 'dbconnect.php';
-                            include_once 'functions.php';
+                            if ($_SESSION['accType'] === 'customer') {
+                                include_once 'dbconnect.php';
+                                include_once 'functions.php';
 
-                            $db = getDatabase();
-                            $barberID = filter_input(INPUT_GET, 'barber-id');
-                            $result1 = getBarberInfo();
+                                $db = getDatabase();
+                                $barberID = filter_input(INPUT_GET, 'barber-id');
+                                if (isset($barberID)) {
+                                    $result1 = getBarberInfo();
 
-                            if ($result1 !== false) {
-                                ?>
-                                <div style="width:480px; margin:auto; background-color:rgba(0,0,0,.6); border-bottom: 1.5px solid #ff442a; position:relative; top:10px;">
-                                    <div>
-                                        <a href="profiles.php?barber-id=<?php echo $result1['BarberID']; ?>"><img style="width:150px;margin:5px 0px 0px 5px;" src="uploads/barbers/barberID<?php echo $result1['BarberID']; ?>/profilepic.jpg"/></a>
-                                        <div style="font-size:25px; position:relative; left:5px; width:20%"><?php echo $result1['Name'] ?></div>
-                                    </div>
-                                    <form method="POST" action="#">
-                                        <label for="daysAvail" style="margin-left: 5px;">Days Available:</label>
-                                        <select id="daysAvail" name="daysAvail">
+                                    if ($result1 !== false && $result1 !== "This barbershop does not have any barbers affiliated with it.") {
+                                        ?>
+                                        <div style="width:480px; margin:auto; background-color:rgba(0,0,0,.6); border-bottom: 1.5px solid #ff442a; position:relative; top:10px;">
+                                            <div>
+                                                <a href="profiles.php?barber-id=<?php echo $result1['BarberID']; ?>"><img style="width:150px;margin:5px 0px 0px 5px;" src="uploads/barbers/barberID<?php echo $result1['BarberID']; ?>/profilepic.jpg"/></a>
+                                                <div style="font-size:25px; position:relative; left:5px; width:20%"><?php echo $result1['Name'] ?></div>
+                                            </div>
+                                            <form method="POST" action="#">
+                                                <label for="daysAvail" style="margin-left: 5px;">Days Available:</label>
+                                                <select id="daysAvail" name="daysAvail">
+                                                    <?php
+                                                    viewAvailablesetDays();
+                                                    ?>
+                                                </select>                            
+                                                <input type="submit" name="SetDay" value="Set Day">
+                                            </form>
+                                            <hr>
                                             <?php
-                                            viewAvailablesetDays();
-                                            ?>
-                                        </select>                            
-                                        <input type="submit" name="SetDay" value="Set Day">
-                                    </form>
-                                    <hr>
-                                    <?php
-                                    $daySet = filter_input(INPUT_POST, 'SetDay');
-                                    if (isset($daySet) && !empty($daySet)) {
-                                        $appDay = filter_input(INPUT_POST, 'daysAvail');
-                                        $result2 = getBarbersDaysAvailable();
-                                        if (isset($appDay) && !empty($appDay)) {
-                                            $output = setAppointment($appDay);
-                                            if ($output === true) {
-                                                ?>
-                                                <form method="POST" action="#">
-                                                    <label for="timesAvail">Times Available:</label>
-                                                    <select id="timesAvail" name="timesAvail">
-                                                        <?php
-                                                        $availTimes = explode(",", $result2[$appDay]);
-                                                        for ($index = 0; $index < count($availTimes); $index++):
-                                                            if ($availTimes[$index] === " " || $availTimes[$index] === ", ") {
-                                                                unset($availTimes[$index]);
-                                                            } else {
-                                                                echo "<option value='$availTimes[$index]'>$availTimes[$index]</option>";
-                                                            }
-                                                        endfor;
+                                            $daySet = filter_input(INPUT_POST, 'SetDay');
+                                            if (isset($daySet) && !empty($daySet)) {
+                                                $appDay = filter_input(INPUT_POST, 'daysAvail');
+                                                $result2 = getBarbersDaysAvailable();
+                                                if (isset($appDay) && !empty($appDay)) {
+                                                    $output = setAppointment($appDay);
+                                                    if ($output === true) {
                                                         ?>
-                                                    </select>
-                                                    <input type="submit" name="SetAppointment" value="Set Appointment">
-                                                </form>
-                                                <?php
-                                            } elseif ($output === false) {
-                                                echo "failed to create appointment.";
-                                            } else {
-                                                echo "<br/>";
-                                                echo "Please try to set appointment again please.";
-                                            }
-                                        } else {
-                                            echo "<br/>";
-                                            echo "Please choose a day first.";
-                                        }
-                                    }
-                                    ?>
-                                </div>
-                                <?php
-                                $setAppointment = filter_input(INPUT_POST, 'SetAppointment');
-                                if (isset($setAppointment) && !empty($setAppointment)) {
-                                    $appTime = filter_input(INPUT_POST, 'timesAvail');
-                                    $output = getBarbersDaysAvailable();
-                                    if ($output === false) {
-                                        echo "Barber has not set his times yet.";
-                                    }
-                                    $result3 = getAppointmentID();
-                                    if ($result3 !== false) {
-                                        $result = getAppointmentDay();
-                                        $appDay1 = $result['Day'];
-                                        if (isset($appTime)) {
-                                            $output = setAppointment($appTime);
-                                            if ($output === true) {
-                                                $output = revTime($appDay1, $appTime);
-                                                if ($output !== true) {
-                                                    echo "failed to update Days and Times available for barber.";
+                                                        <form method="POST" action="#">
+                                                            <label for="timesAvail">Times Available:</label>
+                                                            <select id="timesAvail" name="timesAvail">
+                                                                <?php
+                                                                $availTimes = explode(",", $result2[$appDay]);
+                                                                for ($index = 0; $index < count($availTimes); $index++):
+                                                                    if ($availTimes[$index] === " " || $availTimes[$index] === ", ") {
+                                                                        unset($availTimes[$index]);
+                                                                    } else {
+                                                                        echo "<option value='$availTimes[$index]'>$availTimes[$index]</option>";
+                                                                    }
+                                                                endfor;
+                                                                ?>
+                                                            </select>
+                                                            <input type="submit" name="SetAppointment" value="Set Appointment">
+                                                            <label>Day Selected is <?php echo $appDay; ?></label>
+                                                        </form>
+                                                        <?php
+                                                    } elseif ($output === false) {
+                                                        echo "failed to create appointment.";
+                                                    } else {
+                                                        echo "<br/>";
+                                                        echo "Please try to set appointment again please.";
+                                                    }
+                                                } else {
+                                                    echo "<br/>";
+                                                    echo "Please choose a day first.";
                                                 }
-                                                header("Location: success-appointment.php?day={$result['Day']}&time=$appTime");
                                             }
-                                        } elseif (isset($appTime) && empty($appTime)) {
-                                            echo "Please choose a valid time.";
+                                            ?>
+                                        </div>
+                                        <?php
+                                        $setAppointment = filter_input(INPUT_POST, 'SetAppointment');
+                                        if (isset($setAppointment) && !empty($setAppointment)) {
+                                            $appTime = filter_input(INPUT_POST, 'timesAvail');
+                                            $output = getBarbersDaysAvailable();
+                                            if ($output === false) {
+                                                echo "Barber has not set his times yet.";
+                                            }
+                                            $result3 = getAppointmentID();
+                                            if ($result3 !== false) {
+                                                $result = getAppointmentDay();
+                                                $appDay1 = $result['Day'];
+                                                if (isset($appTime)) {
+                                                    $output = setAppointment($appTime);
+                                                    if ($output === true) {
+                                                        $output = revTime($appDay1, $appTime);
+                                                        if ($output !== true) {
+                                                            echo "failed to update Days and Times available for barber.";
+                                                        }
+                                                        header("Location: success-appointment.php?day={$result['Day']}&time=$appTime");
+                                                    }
+                                                } elseif (isset($appTime) && empty($appTime)) {
+                                                    echo "Please choose a valid time.";
+                                                }
+                                            }
                                         }
+                                    } elseif ($result1 === "This barbershop does not have any barbers affiliated with it.") {
+                                        echo $result1;
+                                    } else {
+                                        echo "You do not have access to this page please sign in.1";
                                     }
+                                } else {
+                                    echo "This user is not a barber and can not set up an appointment with this user.";
                                 }
                             } else {
-                                echo "You do not have access to this page please sign in.";
+                                echo "You do not have access to this page please sign in as a customer.";
                             }
                         } else {
-                            echo "You do not have access to this page please sign in.";
+                            echo "You do not have access to this page please sign in.2";
                         }
                     } else {
-                        echo "You do not have access to this page please sign in.";
+                        echo "You do not have access to this page please sign in.3";
                     }
                 } else {
-                    echo "You do not have access to this page please sign in.";
+                    echo "You do not have access to this page please sign in.4";
                 }
                 ?>
 

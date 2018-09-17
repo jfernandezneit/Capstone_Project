@@ -32,10 +32,7 @@
                         <input id="custPhone" type="text" name="custPhone">
                         <br/>
                         <br/>
-                        <label for="custPic">Upload Image:</label>
-                        <input id="custPic" name="custPic" type="file">
-                        <br/>
-                        <br/>     
+                            
                     <?php } else { ?>
                         <label for="custUsername">Username</label>
                         <input id="custUsername" type="text" name="custUsername">

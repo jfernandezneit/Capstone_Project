@@ -24,14 +24,15 @@ and open the template in the editor.
                 </form>
                 <?php
                 include_once 'login.php';
+                include_once 'functions.php';
                 if (isset($_SESSION['authentication'])) {
                     if ($_SESSION['authentication'] === true) {
                         echo "<a href='logout.php' style='position:relative;text-decoration:none; color:lightgrey; left: 877px;'>Log Out</a>";
-                        if($_SESSION['accType'] === 'admin') {
+                        if ($_SESSION['accType'] === 'admin') {
                             echo "<a href='admin-home.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
-                        }elseif($_SESSION['accType'] === 'customer'){
+                        } elseif ($_SESSION['accType'] === 'customer') {
                             echo "<a href='settings.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
-                        } else{
+                        } else {
                             echo "<a href='personal-Profile.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
                         }
                     } else {
@@ -42,43 +43,45 @@ and open the template in the editor.
                 }
                 ?>
             </div><!-- End of nav div -->
-
+            <?php
+            $customerID = filter_input(INPUT_GET, 'customer-id');
+            $barberID = filter_input(INPUT_GET, 'barber-id');
+            $result = getBarberInfo();
+            ?>
             <div id="content" style="background-color: white; min-height: 300px;">
-                <div style="width:50%; background-color:rgba(0,0,0,.6); position: relative; top: 50px; border-bottom: 1.5px solid #ff442a; margin:auto;">
-                    <div style="position:relative; left:110px;">
-                        <form method="POST" action="#">
-                            <label for="loginUsername">Username: </label>
-                            <input id="loginUsername" type="email" name="loginUsername">
-                            <br/>
-                            <br/>
-                            <label for="loginPass">Password: </label>
-                            <input id="loginPass" type="password" name="loginPass">
-                            <br/>
-                            <br/>
-                            <label><b>What type of account ?</b></label>
-                            <br/>
-                            <br/>
-                            <label for="loginAcc1">Barbershop</label>
-                            <input id="loginAcc1"type="radio" name="loginAcc" value="barbershop">
-                            <label for="loginAcc2">Barber</label>
-                            <input id="loginAcc2"type="radio" name="loginAcc" value="barber">
-                            <label for="loginAcc3">User</label>
-                            <input id="loginAcc3"type="radio" name="loginAcc" value="customer">
-                            <br/>
-                            <br/>
-                            <a href="signup.php" style="text-decoration: none; color:#ff442a;">Don't have an account <span style="color:black;"></a>
-                            <br/>
-                            <br/>
-                            <a href="admin-login-form.php" style="text-decoration: none; color:white;">Admin Login</a>
-                            <br/>
-                            <br/>
-                            <input type="submit" name="login" value="Login">
-                        </form>
-                    </div>
+                <div style="width:100%; background-color:rgba(0,0,0,.6); position: relative; top: 50px; border-bottom: 1.5px solid #ff442a">
+                    <form method="POST" action="#">
+                        <label for="barberReviewed">Barber Reviewing: </label>
+                        <input style="background-color: lightgrey" type="text" name="barberReviewed" id="barberReviewed" value="<?php echo $result['Name'] ?>" readonly>
+                        <br/>
+                        <br/>
+                        <label for="review">Review: </label>
+                        <input style="height:50px; width: 300px;" type="text" id="review" name="review">
+                        <br/>
+                        <br/>
+                        <label for="rating">Rating: </label>
+                        <select name="rating" id="rating">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <br/>
+                        <br/>
+                        <input type="submit" name="SubmitReview" value="Submit"/>
+                    </form>
+                    <?php
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        $check = insertReview();
+                        if ($check === true) {
+                            echo "successfully reviewed";
+                        } else {
+                            echo "failed to review.";
+                        }
+                    }
+                    ?>
                 </div>
-                <?php
-                include_once 'login.php';
-                ?>
 
             </div><!-- End of content div -->
 
@@ -86,4 +89,6 @@ and open the template in the editor.
 
     </body>
 </html>
+
+
 

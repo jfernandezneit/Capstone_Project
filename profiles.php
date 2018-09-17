@@ -27,11 +27,11 @@ and open the template in the editor.
                 if (isset($_SESSION['authentication'])) {
                     if ($_SESSION['authentication'] === true) {
                         echo "<a href='logout.php' style='position:relative;text-decoration:none; color:lightgrey; left: 877px;'>Log Out</a>";
-                        if($_SESSION['accType'] === 'admin') {
+                        if ($_SESSION['accType'] === 'admin') {
                             echo "<a href='admin-home.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
-                        }elseif($_SESSION['accType'] === 'customer'){
+                        } elseif ($_SESSION['accType'] === 'customer') {
                             echo "<a href='settings.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
-                        } else{
+                        } else {
                             echo "<a href='personal-Profile.php' style='position:relative; left:887px; top:5px;'><img src='images/User_Profile.png' style='width:35px;'/></a>";
                         }
                     } else {
@@ -50,28 +50,24 @@ and open the template in the editor.
                     $barbershopID = filter_input(INPUT_GET, 'barbershop-id');
                     $barberID = filter_input(INPUT_GET, 'barber-id');
                     if (isset($barbershopID)) {
-                        $stmt = $db->prepare("SELECT * FROM barbershops WHERE BarbershopID = '$barbershopID'");
-                        if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
-                            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                            $profileName = $result['BarbershopName'];
+                        $result = getBarberInfo();
+                        if ($result !== false) {
+                            $profileName = $result['Name'];
                             $profileAddress = $result['Address'];
                             $profileZip = $result['Zip'];
                             $profilePhone = $result['PhoneNumber'];
-                            $profileRating = $result['Rating'];
                             echo "<div style='margin-left: 5px; position: relative; top: 5px'><img style='width:150px;' src='./uploads/barbershops/barbershopID$barbershopID/profilepic.jpg'/></div>";
                             ?>
                             <div style="width:30%; position:relative; left:5px;">Shop Name: <?php echo $profileName ?></div>
-                            <div style="width:10%; position:relative; left:5px;">Rating: <?php echo $profileRating ?> / 5</div>
                             <br/>
                             <div style="width:30%; position:relative; left:5px;">Address: <?php echo $profileAddress . ", " . $profileZip ?></div>
                             <div style="width:20%; position:relative; left:5px;">Phone: <?php echo $profilePhone ?></div>
                             <?php
-                            $stmt2 = $db->prepare("SELECT * FROM barbers WHERE BarbershopID = '$barbershopID'");
-                            if ($stmt2->execute() > 0 && $stmt2->rowCount() > 0) {
-                                $results = $stmt2->fetchAll(PDO:: FETCH_ASSOC);
+                            $results = getShopInfo();
+                            if ($results !== false) {
                                 echo "<h3>Barbers</h3>";
                                 foreach ($results as $x):
-                                    echo "<a href='profiles.php?barber-id={$x['BarberID']}' style='text-decoration:none; color:white;'>" . $x['BarberName'] . "</a>";
+                                    echo "<a href='profiles.php?barber-id={$x['BarberID']}' style='text-decoration:none; color:white;'>" . $x['Name'] . "</a>";
                                     echo "<br/>";
 
                                 endforeach;
@@ -82,22 +78,21 @@ and open the template in the editor.
                             echo 'failed2';
                         }
                     } elseif (isset($barberID)) {
-                        $stmt = $db->prepare("SELECT * FROM barbers WHERE BarberID = '$barberID'");
-                        if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
-                            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                            $profileName = $result['BarberName'];
-                            $profileRating = $result['Rating'];
+                        $result = getBarberInfoProfiles();
+                        if ($result !== false) {
+                            $profileName = $result['Name'];
                             echo "<div style='margin-left: 5px; position: relative; top: 5px'><img style='width:150px;' src='./uploads/barbers/barberID$barberID/profilepic.jpg'/></div>";
                             ?>
 
                             <div style="width:30%; position:relative; left:5px;">Barber Name: <?php echo $profileName ?></div>
-                            <div style="width:10%; position:relative; left:5px;">Rating: <?php echo $profileRating ?> / 5</div>
-                            <div style="width:10%; position:relative; left:5px;"><a style="text-decoration: none; color: white;"href="appointment.php?barber-id=<?php echo $result['BarberID'];?>">Book with me</a></div>
+                            <div style="width:10%; position:relative; left:5px;"><a style="text-decoration: none; color: white;"href="appointment.php?barber-id=<?php echo $result['BarberID']; ?>">Book with me</a></div>
                             <br/>
                             <?php
                         } else {
                             echo 'failed3';
                         }
+                    } elseif ($_SESSION['accType'] === 'customer') {
+                        header("Location: settings.php");
                     }
                     ?>
                 </div>
@@ -105,40 +100,24 @@ and open the template in the editor.
                 <?php
                 include_once 'dbconnect.php';
                 $db = getDatabase();
-                if (isset($barbershopID)) {
-                    $stmt = $db->prepare("SELECT * FROM shopreviews WHERE BarbershopID = '$barbershopID'");
-                    if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
-                        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                        foreach ($result as $x):
-                            ?>
-                            <div style="width:100%; position:relative; border-bottom: .5px solid #ff442a; background-color: rgba(0,0,0,.6);">
-                                <div style="width:100px; position:relative;">Reviewer: <?php echo $x['Reviewer'] ?></div>
-                                <div style="width:150px; position:relative;"><?php echo $x['ts'] ?></div>
-                                <div style="width:80%; position:relative; border: .5px solid grey; left:19.5%; bottom:50.5px; min-height: 100px; background-color: white;"><?php echo $x['Review'] ?></div>
-                            </div>
-                            <?php
-                        endforeach;
-                    } else {
-                        echo "There are no reviews for this barbershop yet.";
-                    }
-                } elseif (isset($barberID)) {
-                    $stmt = $db->prepare("SELECT * FROM barbereviews WHERE BarberID = '$barberID'");
-                    if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
-                        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                if (isset($barberID)) {
+                    $result = getReviews();
+                    if ($result !== false) {
+                        $cnt = 1;
                         foreach ($result as $x):
                             ?>
                             <div style="width:100%; position:relative; border-bottom: .5px solid #ff442a; margin-bottom: 15px; background-color: rgba(0,0,0,.6);">
-                                <div style="width:100px; position:relative;">Reviewer: <?php echo $x['Reviewer'] ?></div>
-                                <div style="width:150px; position:relative;"><?php echo $x['ts'] ?></div>
-                                <div style="width:80%; position:relative; border: .5px solid grey; left:19.5%; bottom:50.5px; min-height: 100px; background-color: white;"><?php echo $x['Review'] ?></div>
+                                <div style="width:100px; position:relative;">Review <?php echo $cnt; ?> </div>
+                                <div style="width:150px; position:relative;"><?php echo $x['ts'] ?></div>                                
+                                <div style="width:100px; position:relative;">Rating: <?php echo $x['Rating'] ?> / 5</div>
+                                <div style="width:80%; position:relative; border: .5px solid grey; left:19.5%; bottom:30px; min-height: 100px; background-color: white;"><?php echo $x['Review'] ?></div>
                             </div>
                             <?php
+                            $cnt++;
                         endforeach;
                     } else {
                         echo 'No Reviews for this profile yet.';
                     }
-                } elseif ($_SESSION['accType'] === 'customer') {
-                    header("Location: settings.php");
                 }
                 ?>
 

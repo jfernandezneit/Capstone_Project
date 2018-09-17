@@ -11,6 +11,7 @@
 
         if (basename($_SERVER['PHP_SELF']) === 'settings.php') {
             $result = getShopInfo();
+
             if ($result === false) {
                 echo "Please sign in.";
             }
@@ -24,8 +25,8 @@
                         <input id="shopName" type="text" name="shopName" style="margin-top:2.5px;" value="<?php echo $result['Name']; ?>">
                         <br/>
                         <br/>
-                        <label for="shopUsername" style="margin-left:5px;">Email: </label>
-                        <input id="shopUsername" type="email" name="shopUsername" value="<?php echo $result['Email']; ?>">
+                        <label for="shopEmail" style="margin-left:5px;">Email: </label>
+                        <input id="shopEmail" type="email" name="shopEmail" value="<?php echo $result['Email']; ?>">
                         <br/>
                         <br/>
                         <label for="shopAddress" style="margin-left:5px;">Address: </label>
@@ -40,10 +41,7 @@
                         <input id="shopPhone" type="text" name="shopPhone" value="<?php echo $result['PhoneNumber']; ?>">
                         <br/>
                         <br/>
-                        <label for="shopPic" style="margin-left:5px;">Upload Image:</label>
-                        <input id="shopPic" name="shopPic" type="file">
-                        <br/>
-                        <br/>                       
+                                              
                         <input type="submit" value="Save Changes" name="UpdateBarbershop" style="margin-left:5px; margin-bottom: px;">
                     <?php } else { ?>
 

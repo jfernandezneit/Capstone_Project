@@ -91,18 +91,16 @@ and open the template in the editor.
                                 $shopName = filter_input(INPUT_POST, 'shopName');
                                 $shopEmail = filter_input(INPUT_POST, 'shopEmail');
                                 $check1 = checkShopRecs($shopName, $shopEmail);
-                                if ($check1 === false) {
+                                if ($check1 !== false) {
                                     $result = updShop();
                                     if ($result === true) {
-                                        echo 'success';
+                                        echo 'successfully updated the profile';
                                     } else {
-                                        echo 'failed';
+                                        echo 'failed to update the profile';
                                     }
                                 } else {
                                     echo 'Email or Shop name unavailable.';
                                 }
-                            } else {
-                                echo "You need to sign in.";
                             }
                         } elseif ($_SESSION['accType'] === 'barber') {
 
@@ -170,7 +168,6 @@ and open the template in the editor.
                                 echo "Please make sure you are signed in.";
                             }
                         } elseif ($_SESSION['accType'] === 'customer') {
-
                             $result = getCustInfo();
                             if ($result !== false) {
                                 ?>
@@ -207,15 +204,20 @@ and open the template in the editor.
                                     } else {
                                         echo 'Please sign in.';
                                     }
+                                    ?>
+                                    <div style="width:10%; background-color: rgba(0,0,0,.6); position:relative; min-height:75px; right: 122px; bottom:635px;">
+                                        <a href="settings.php" style="text-decoration: none; color: white;">Main</a>
+                                        <hr>
+                                        <a href="settings-appointments.php" style="text-decoration: none; color: white;">Appointments</a>
+                                        <hr>
+                                        <a href="review.php" style="text-decoration: none; color: white;">Review</a>
+                                    </div>
+                                    <?php
                                 } else {
                                     echo "Please make sure you are signed in.";
                                 }
                                 ?>
-                                <div style="width:10%; background-color: rgba(0,0,0,.6); position:relative; min-height:75px; right:123px; bottom: 630px;">
-                                    <a href="settings.php" style="text-decoration: none; color: white;">Main</a>
-                                    <hr>
-                                    <a href="settings-appointments.php" style="text-decoration: none; color: white;">Appointments</a>
-                                </div>
+
                                 <?php
                             }
                         } //End of the isset for authentication

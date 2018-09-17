@@ -1,6 +1,7 @@
 <?php
 
 include_once 'dbconnect.php';
+include_once 'login.php';
 
 function search() {
     $db = getDatabase();
@@ -35,7 +36,7 @@ function getBarbersDaysAvailable() {
     $db = getDatabase();
     $barbershopID = filter_input(INPUT_GET, 'barbershop-id');
     $barberID = filter_input(INPUT_GET, 'barber-id');
-    $stmt = $db->prepare("SELECT * FROM daystimesavail WHERE BarberID = '$barberID' AND BarbershopID = '$barbershopID'");
+    $stmt = $db->prepare("SELECT * FROM daystimesavail WHERE BarberID = $barberID AND BarbershopID = $barbershopID");
     $bool = false;
     if ($stmt->execute() && $stmt->rowCount() > 0) {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -91,15 +92,16 @@ function viewAvailablesetDays() {
         echo "<option value='Sunday'>Sunday</option>";
     }
 }
+
 function setAppointment($value1) {
     $barberID = filter_input(INPUT_GET, 'barber-id');
     $db = getDatabase();
     $bool = false;
     $customerInfo = getCustInfo();
     $customerName = $customerInfo['Name'];
-    if($value1 === 'Monday' || $value1 === 'Tuesday' || $value1 === 'Wednesday' || $value1 === 'Thursday' || $value1 === 'Friday' || $value1 === 'Saturday' || $value1 === 'Sunday') {
+    if ($value1 === 'Monday' || $value1 === 'Tuesday' || $value1 === 'Wednesday' || $value1 === 'Thursday' || $value1 === 'Friday' || $value1 === 'Saturday' || $value1 === 'Sunday') {
         $stmt = $db->prepare("INSERT INTO appointments SET CustomerID = {$_SESSION['user-id']}, BarberID = $barberID, Day = '$value1', CustomerName = '$customerName'");
-    }else{
+    } else {
         $temp = getAppointmentID();
         $appointmentID = $temp['AppointmentID'];
         $stmt = $db->prepare("UPDATE appointments SET Time = '$value1' WHERE AppointmentID = $appointmentID");
@@ -145,21 +147,21 @@ function revTime($day, $time) {
     $key = array_search($time, $tempTimes, true);
     $key2 = $key + 1;
     if ($key !== false) {
-        
+
         unset($tempTimes[$key]);
         $tempTimes[$key] = $tempTimes[$key2];
         unset($tempTimes[$key2]);
         $key3 = $key2 + 1;
-        
+
         for ($x = $key2; $x < count($tempTimes); $x++):
             $tempTimes[$x] = $tempTimes[$key3];
             unset($tempTimes[$key3]);
             $key3++;
         endfor;
-        
+
         $availTimes = "";
         $lastElement = end($tempTimes);
-        
+
         for ($x = 0; $x < count($tempTimes); $x++):
             if ($tempTimes[$x] === $lastElement) {
                 $availTimes .= $tempTimes[$x] . ",  ";
@@ -190,7 +192,8 @@ function getShopInfo() {
         if (isset($temp) && !empty($temp)) {
             $barbershopID = filter_input(INPUT_GET, 'barbershop-id');
         } else {
-            $barbershopID = filter_input(INPUT_POST, 'barbAffiliation');
+            $value1 = filter_input(INPUT_POST, 'barbAffiliation');
+            $barbershopID = checkAffl($value1);
         }
         $stmt = $db->prepare("SELECT * FROM barbershops WHERE BarbershopID = $barbershopID");
     } else {
@@ -207,23 +210,43 @@ function getShopInfo() {
 
 function getBarberInfo() {
     $db = getDatabase();
-    if ($_SESSION['accType'] !== 'barber') {
+    $bool = false;
+    $barbershopID = filter_input(INPUT_GET, 'barbershop-id');
+    if ($_SESSION['accType'] === 'barbershop') {
+        $stmt = $db->prepare("SELECT * FROM barbers WHERE BarbershopID = $barbershopID");
+    } elseif ($_SESSION['accType'] !== 'barber') {
         $barberID = filter_input(INPUT_GET, 'barber-id');
         $stmt = $db->prepare("SELECT * FROM barbers WHERE BarberID = $barberID");
     } else {
         $stmt = $db->prepare("SELECT * FROM barbers WHERE BarberID = {$_SESSION['user-id']}");
     }
-    $result = false;
-    if ($stmt->execute() > 0 && $stmt->rowCount() > 0) {
+    if ($stmt->execute() && $stmt->rowCount() > 0) {
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    } elseif ($stmt->rowCount() < 1) {
+        $result = 'This barbershop does not have any barbers affiliated with it.';
+        return $result;
+    } else {
+        return $bool;
+    }
+}
+
+function getBarberInfoProfiles() {
+    $db = getDatabase();
+    $bool = false;
+    $barberID = filter_input(INPUT_GET, 'barber-id');
+    $stmt = $db->prepare("SELECT * FROM barbers WHERE BarberID = $barberID");
+    if ($stmt->execute() && $stmt->rowCount() > 0) {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;
     } else {
-        return $result;
+        return $bool;
     }
 }
 
 function getCustInfo() {
     $db = getDatabase();
+    
     if ($_SESSION['accType'] !== 'customer') {
         $customerID = filter_input(INPUT_GET, 'customer-id');
         $stmt = $db->prepare("SELECT * FROM barbercust WHERE CustomerID = $customerID");
@@ -258,23 +281,15 @@ function updShop() {
     $bool = false;
     $db = getDatabase();
     $shopName = filter_input(INPUT_POST, 'shopName');
-    $shopUsername = filter_input(INPUT_POST, 'shopUsername');
+    $shopEmail = filter_input(INPUT_POST, 'shopEmail');
     $shopAddress = filter_input(INPUT_POST, 'shopAddress');
     $shopZip = filter_input(INPUT_POST, 'shopZip');
     $shopPhone = filter_input(INPUT_POST, 'shopPhone');
-    $stmt = $db->prepare("UPDATE barbershops SET Name = '$shopName' , Email = '$shopUsername', Address = '$shopAddress', Zip = '$shopZip', PhoneNumber = '$shopPhone' WHERE BarbershopID = '{$_SESSION['user-id']}'");
+    $stmt = $db->prepare("UPDATE barbershops SET Name = '$shopName' , Email = '$shopEmail', Address = '$shopAddress', Zip = '$shopZip', PhoneNumber = '$shopPhone' WHERE BarbershopID = '{$_SESSION['user-id']}'");
 
     if ($stmt->execute()) {
-        $tmp_name = $_FILES['shopPic']['tmp_name'];
-        if (isset($tmp_name)) {
-            $currentDir = getcwd();
-//        mkdir("$currentDir/uploads/barbershops/barbershopID{$_SESSION['user-id']}", 0777, true);
-            $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbershops' . DIRECTORY_SEPARATOR . 'barbershopID' . $_SESSION['user-id'];
-            $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
-            $result = move_uploaded_file($tmp_name, $new_name);
-            $bool = true;
-            return $bool;
-        }
+        $bool = true;
+        return $bool;
     } else {
         $bool = false;
         echo 'Failed to update.';
@@ -292,18 +307,8 @@ function updBarb() {
     $stmt = $db->prepare("UPDATE barbers SET Name = '$barbName', BarbershopID = '$barbAffiliation', Email = '$barbEmail' WHERE BarberID = '{$_SESSION['user-id']}'");
 
     if ($stmt->execute()) {
-        $tmp_name = $_FILES['barberPic']['tmp_name'];
-        if (isset($tmp_name)) {
-            $currentDir = getcwd();
-//        mkdir("$currentDir/uploads/barbers/barberID{$_SESSION['user-id']}", 0777, true);
-            $path = $currentDir . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'barbers' . DIRECTORY_SEPARATOR . 'barberID' . $_SESSION['user-id'];
-            $new_name = $path . DIRECTORY_SEPARATOR . 'profilepic.jpg';
-            move_uploaded_file($tmp_name, $new_name);
             $bool = true;
             return $bool;
-        }
-        $bool = true;
-        return $bool;
     } else {
         return $bool;
     }
@@ -326,17 +331,20 @@ function updCust() {
 function updPass() {
     $db = getDatabase();
     $bool = false;
-    if ($_SESSION['accType'] === 'barbershops') {
-        $password = filter_input(INPUT_POST, 'newPass');
+    if ($_SESSION['accType'] === 'barbershop') {
+        $temp = filter_input(INPUT_POST, 'newPass');
+        $password = sha1($temp);
         $stmt = $db->prepare("UPDATE barbershops SET Password = '$password' WHERE BarbershopID = {$_SESSION['user-id']}");
-        if ($stmt->execute() > 0) {
+
+        if ($stmt->execute() && $stmt->rowCount() > 0) {
             $bool = true;
             return $bool;
         } else {
             return $bool;
         }
     } elseif ($_SESSION['accType'] === 'barber') {
-        $password = filter_input(INPUT_POST, 'newPass');
+        $temp = filter_input(INPUT_POST, 'newPass');
+        $password = sha1($temp);
         $stmt = $db->prepare("UPDATE barbers SET Password = '$password' WHERE BarberID = {$_SESSION['user-id']}");
         if ($stmt->execute() > 0) {
             $bool = true;
@@ -345,7 +353,8 @@ function updPass() {
             return $bool;
         }
     } elseif ($_SESSION['accType'] === 'customer') {
-        $password = filter_input(INPUT_POST, 'newPass');
+        $temp = filter_input(INPUT_POST, 'newPass');
+        $password = sha1($temp);
         $stmt = $db->prepare("UPDATE barbercust SET Password = '$password' WHERE CustomerID = {$_SESSION['user-id']}");
         if ($stmt->execute() > 0) {
             $bool = true;
@@ -584,11 +593,10 @@ function checkAffl($value1) {
             if (basename($_SERVER['PHP_SELF']) === 'settings.php') {
                 $bool = true;
                 $result = $x['BarbershopID'];
-//                echo $result;
-//                die('nasjkdnfjhb');
                 return $result;
             }
-            return $x['BarbershopID'];
+            $result = $x['BarbershopID'];
+            return $result;
         }
     endforeach;
 
@@ -602,6 +610,8 @@ function checkShopRecs($value1, $value2) {
     foreach ($results as $x):
         if ($x['Name'] === $value1 || $x['Email'] === $value2) {
             $bool = true;
+            return $bool;
+        } else {
             return $bool;
         }
     endforeach;
@@ -623,30 +633,101 @@ function checkBarberEmail($value1) {
 
     return $bool;
 }
-function getAppointments(){
+
+function getAppointments() {
     $db = getDatabase();
     $bool = false;
-    if($_SESSION['accType'] === 'barber'){
+    if ($_SESSION['accType'] === 'barber') {
         $stmt = $db->prepare("SELECT * FROM appointments WHERE BarberID = {$_SESSION['user-id']}");
-    }elseif($_SESSION['accType'] === 'customer'){
+    } elseif ($_SESSION['accType'] === 'customer') {
         $stmt = $db->prepare("SELECT * FROM appointments WHERE CustomerID = {$_SESSION['user-id']}");
-    } else{
+    } else {
         return $bool;
     }
-    if($stmt->execute()){
+    if ($stmt->execute()) {
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
-    }else{
+    } else {
         return $bool;
     }
 }
 
-function deleteAppointment(){
+function deleteAppointment() {
     $db = getDatabase();
     $bool = false;
     $appointmentID = filter_input(INPUT_GET, 'appointment-id');
     $stmt = $db->prepare("DELETE FROM appointments WHERE  AppointmentID = $appointmentID");
-    if($stmt->execute()){
+    if ($stmt->execute()) {
+        $bool = true;
+        return $bool;
+    } else {
+        return $bool;
+    }
+}
+
+function getReviews() {
+    $db = getDatabase();
+    $bool = false;
+    $barberID = filter_input(INPUT_GET, 'barber-id'); 
+    if($_SESSION['accType'] === 'barber' && basename($_SERVER['PHP_SELF']) === 'personal-Profile.php'){
+        $barberID = $_SESSION['user-id'];
+    }
+    
+    if (isset($barberID) && !empty($barberID)) {
+        $stmt = $db->prepare("SELECT * FROM barbereviews WHERE BarberID = $barberID");
+        if ($stmt->execute() && $stmt->rowCount() > 0) {
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        } else {
+            return $bool;
+        }
+    } else {
+        return $bool;
+    }
+}
+
+function canReviewBarber() {
+    $db = getDatabase();
+    $bool = false;
+    $barberID = filter_input(INPUT_GET, 'barber-id');
+    if ($_SESSION['accType'] === 'customer') {
+        $stmt = $db->prepare("SELECT * FROM appointments WHERE CustomerID = {$_SESSION['user-id']} AND BarberID = $barberID");
+    } else {
+        return $bool;
+    }
+    if ($stmt->execute() && $stmt->rowCount() > 0) {
+        $bool = true;
+        return $bool;
+    } else {
+        return $bool;
+    }
+}
+
+function getCustomersAppointment() {
+    $db = getDatabase();
+    $bool = false;
+    $stmt = $db->prepare("SELECT * FROM appointments WHERE CustomerID = {$_SESSION['user-id']}");
+    if ($stmt->execute() && $stmt->rowCount() > 0) {
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    } else {
+        return $bool;
+    }
+}
+
+function insertReview() {
+    $db = getDatabase();
+    $bool = false;
+    $barberReviewed = filter_input(INPUT_GET, 'barber-id');
+    $customerID = filter_input(INPUT_GET, 'customer-id');
+    $review = filter_input(INPUT_POST, 'review');
+    $temp = filter_input(INPUT_POST, 'rating');
+    $rating = (int) $temp;
+
+    $stmt = $db->prepare("INSERT INTO barbereviews SET BarberID = $barberReviewed, CustomerID = $customerID, Review = '$review', Rating = $rating");
+//    print_r($barberReviewed);
+//    die();
+    if ($stmt->execute()) {
         $bool = true;
         return $bool;
     } else {

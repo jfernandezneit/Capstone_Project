@@ -34,10 +34,7 @@
                         <input id="barbEmail" type="email" name="barbEmail" value="<?php echo $result['Email']; ?>">
                         <br/>
                         <br/>
-                        <label for="barberPic">Upload Image:</label>
-                        <input id="barberPic" name="barberPic" type="file">
-                        <br/>
-                        <br/>
+                        
                         <?php
                     } else {
                         ?>

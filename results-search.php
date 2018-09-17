@@ -48,10 +48,9 @@
                             ?>
                             <div style="width:50%; margin:auto; margin-bottom: 15px; border-bottom: 1.5px solid #ff442a; background-color:rgba(0,0,0,.6); position:relative; ">
                                 <div><a href="profiles.php?barbershop-id=<?php echo $x['BarbershopID'];?>"><img style="width:50px;"src="uploads/barbershops/barbershopID<?php echo $x['BarbershopID']; ?>/profilepic.jpg"></a></div>
-                                <div>Shop Name:<?php echo $x['BarbershopName']; ?></div>
-                                <div>Address:<?php echo $x['Address']; ?></div>
+                                <div>Shop Name:<?php echo $x['Name']; ?></div>
+                                <div>Address:<?php echo $x['Address'] . ', ' . $x['Zip']; ?></div>
                                 <div>Phone:<?php echo $x['PhoneNumber']; ?></div>
-                                <div>Rating:<?php echo $x['Rating']; ?> / 5</div>
                                 <div><a style="text-decoration: none; color: white;" href="appointment.php?barbershop-id=<?php echo $x['BarbershopID'];?>">Book now</a></div>
                             </div>
                             <?php
@@ -59,10 +58,9 @@
                         }
                     } elseif ($action === 'Barber') {
                         foreach ($results as $x) {?>
-                        <div style="width:50%; margin:auto; margin-bottom: 15px; border-bottom: 1.5px solid #ff442a; background-color:rgba(0,0,0,.6); bottom:10px; position:relative; ">
+                        <div style="width:50%; margin:auto; margin-bottom: 15px; border-bottom: 1.5px solid #ff442a; background-color:rgba(0,0,0,.6); position:relative; ">
                                 <div><a href="profiles.php?barber-id=<?php echo $x['BarberID'];?>"><img style="width:50px;"src="uploads/barbers/barberID<?php echo $x['BarberID']; ?>/profilepic.jpg"></a></div>
-                                <div>Shop Name:<?php echo $x['BarberName']; ?></div>
-                                <div>Rating:<?php echo $x['Rating']; ?> / 5</div>
+                                <div>Name:<?php echo $x['Name']; ?></div>
                                 <div><a style="text-decoration: none; color: white;" href="appointment.php?barber-id=<?php echo $x['BarberID'];?>&barbershop-id=<?php echo $x['BarbershopID'];?>">Book now</a></div>
                             </div>
                     <?php
