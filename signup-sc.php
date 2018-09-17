@@ -95,6 +95,8 @@ and open the template in the editor.
                             include_once'form-customer.php';
                             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $result = insCust();
+                                print_r($result);
+                                die();
                                 if ($result === true) {
                                     header("Location: index.php");
                                 } else {

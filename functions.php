@@ -34,9 +34,9 @@ function search() {
 
 function getBarbersDaysAvailable() {
     $db = getDatabase();
-    $barbershopID = filter_input(INPUT_GET, 'barbershop-id');
-    $barberID = filter_input(INPUT_GET, 'barber-id');
-    $stmt = $db->prepare("SELECT * FROM daystimesavail WHERE BarberID = $barberID AND BarbershopID = $barbershopID");
+    $barberInfo = getBarberInfo();
+    $barberID = $barberInfo['BarberID'];
+    $stmt = $db->prepare("SELECT * FROM daystimesavail WHERE BarberID = $barberID");
     $bool = false;
     if ($stmt->execute() && $stmt->rowCount() > 0) {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -67,29 +67,59 @@ function getAppointmentDay() {
 
 function viewAvailablesetDays() {
     $result = getBarbersDaysAvailable();
-    if ($bool === false) {
+//    print_r($result);
+//    die();
+    if ($result === false) {
         echo "Barber does not have his times set yet.";
     }
     if ($result['Monday'] !== NULL) {
-        echo "<option value='Monday'>Monday</option>";
+        if (basename($_SERVER['PHP_SELF']) === 'view-schedule.php') {
+            echo "<div style='width:500px; margin:auto;'>" . "Monday: " . $result['Monday']. "<br/><br/></div>";
+        } else {
+            echo "<option value='Monday'>Monday</option>";
+        }
     }
     if ($result['Tuesday'] !== NULL) {
-        echo "<option value='Tuesday'>Tuesday</option>";
+        if (basename($_SERVER['PHP_SELF']) === 'view-schedule.php') {
+            echo "<div style='width:500px; margin:auto;'>" . "Tuesday: " . $result['Tuesday']. "<br/><br/></div>";
+        } else {
+            echo "<option value='Tuesday'>Tuesday</option>";
+        }
     }
     if ($result['Wednesday'] !== NULL) {
-        echo "<option value='Wednesday'>Wednesday</option>";
+        if (basename($_SERVER['PHP_SELF']) === 'view-schedule.php') {
+            echo "<div style='width:500px; margin:auto;'>" . "Wednesday: " . $result['Wednesday']. "<br/><br/></div>";
+        } else {
+            echo "<option value='Wednesday'>Wednesday</option>";
+        }
     }
     if ($result['Thursday'] !== NULL) {
-        echo "<option value='Thursday'>Thursday</option>";
+        if (basename($_SERVER['PHP_SELF']) === 'view-schedule.php') {
+            echo "<div style='width:500px; margin:auto;'>" . "Thursday: " . $result['Thursday']. "<br/><br/></div>";
+        } else {
+            echo "<option value='Thursday'>Thursday</option>";
+        }
     }
     if ($result['Friday'] !== NULL) {
-        echo "<option value='Friday'>Friday</option>";
+        if (basename($_SERVER['PHP_SELF']) === 'view-schedule.php') {
+            echo "<div style='width:500px; margin:auto;'>" . "Friday: " . $result['Friday']. "<br/><br/></div>";
+        } else {
+            echo "<option value='Friday'>Friday</option>";
+        }
     }
     if ($result['Saturday'] !== NULL) {
-        echo "<option value='Saturday'>Saturday</option>";
+        if (basename($_SERVER['PHP_SELF']) === 'view-schedule.php') {
+            echo "<div style='width:500px; margin:auto;'>" . "Saturday: " . $result['Saturday']. "<br/><br/></div>";
+        } else {
+            echo "<option value='Saturday'>Saturday</option>";
+        }
     }
     if ($result['Sunday'] !== NULL) {
-        echo "<option value='Sunday'>Sunday</option>";
+        if (basename($_SERVER['PHP_SELF']) === 'view-schedule.php') {
+           echo "<div style='width:500px; margin:auto;'>" . "Sunday: " . $result['Sunday']. "<br/><br/></div>";
+        } else {
+            echo "<option value='Sunday'>Sunday</option>";
+        }
     }
 }
 
@@ -246,7 +276,7 @@ function getBarberInfoProfiles() {
 
 function getCustInfo() {
     $db = getDatabase();
-    
+
     if ($_SESSION['accType'] !== 'customer') {
         $customerID = filter_input(INPUT_GET, 'customer-id');
         $stmt = $db->prepare("SELECT * FROM barbercust WHERE CustomerID = $customerID");
@@ -307,8 +337,8 @@ function updBarb() {
     $stmt = $db->prepare("UPDATE barbers SET Name = '$barbName', BarbershopID = '$barbAffiliation', Email = '$barbEmail' WHERE BarberID = '{$_SESSION['user-id']}'");
 
     if ($stmt->execute()) {
-            $bool = true;
-            return $bool;
+        $bool = true;
+        return $bool;
     } else {
         return $bool;
     }
@@ -668,11 +698,11 @@ function deleteAppointment() {
 function getReviews() {
     $db = getDatabase();
     $bool = false;
-    $barberID = filter_input(INPUT_GET, 'barber-id'); 
-    if($_SESSION['accType'] === 'barber' && basename($_SERVER['PHP_SELF']) === 'personal-Profile.php'){
+    $barberID = filter_input(INPUT_GET, 'barber-id');
+    if ($_SESSION['accType'] === 'barber' && basename($_SERVER['PHP_SELF']) === 'personal-Profile.php') {
         $barberID = $_SESSION['user-id'];
     }
-    
+
     if (isset($barberID) && !empty($barberID)) {
         $stmt = $db->prepare("SELECT * FROM barbereviews WHERE BarberID = $barberID");
         if ($stmt->execute() && $stmt->rowCount() > 0) {
@@ -733,4 +763,55 @@ function insertReview() {
     } else {
         return $bool;
     }
+}
+
+function receivingDays() {
+    $days = $_POST['days'];
+    $setDays = array();
+    $cnt1 = 0;
+    foreach ($days as $x):
+        $setDays[$cnt1] = $x;
+        $cnt1++;
+    endforeach;
+    return $setDays;
+}
+
+function receivingTimes() {
+    $times = $_POST['times'];
+    $temp = array();
+    $tempo = '';
+    $cnt1 = 0;
+    $cnt2 = 0;
+    foreach ($times as $x):
+        $temp[$cnt1] = $x;
+        $cnt1++;
+    endforeach;
+    $lastelement = end($temp);
+    foreach ($temp as $x):
+        if ($temp[$cnt2] !== $lastelement) {
+            $tempo .= $temp[$cnt2] . ",";
+        } else {
+            $tempo .= $temp[$cnt2];
+        }
+        $cnt2++;
+    endforeach;
+    return $tempo;
+}
+
+function setAvailableDaysTimes() {
+    $db = getDatabase();
+    $bool = false;
+    $setDays = receivingDays();
+    $setTimes = receivingTimes();
+    $barberInfo = getBarberInfo();
+    $barberID = $barberInfo['BarberID'];
+    foreach ($setDays as $x):
+        $stmt = $db->prepare("UPDATE daystimesavail SET $x = '$setTimes' WHERE BarberID = $barberID");
+        if ($stmt->execute() && $stmt->rowCount() > 0) {
+            $bool = true;
+        } else {
+            return $bool;
+        }
+    endforeach;
+    return $bool;
 }

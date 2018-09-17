@@ -162,6 +162,8 @@ and open the template in the editor.
                                     <a href="settings.php" style="text-decoration: none; color: white;">Main</a>
                                     <hr>
                                     <a href="settings-appointments.php" style="text-decoration: none; color: white;">Appointments</a>
+                                    <hr>
+                                    <a href="set-availabledays.php" style="text-decoration: none; color: white;">Set Availability</a>
                                 </div>
                                 <?php
                             } else {
